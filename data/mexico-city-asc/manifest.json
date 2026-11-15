@@ -208,22 +208,6 @@
    }
   },
   {
-   "id": "cracks",
-   "kind": "lines",
-   "file": "ctx_cracks.geojson",
-   "style": "crack",
-   "label": {
-    "en": "Mapped ground cracks (CDMX atlas)",
-    "uk": "Нанесені тріщини (атлас CDMX)"
-   },
-   "visible": false,
-   "z": 3.4,
-   "note": {
-    "en": "Where field teams mapped cracks; our test found no link to uneven sinking.",
-    "uk": "Там, де польові команди нанесли тріщини; наш тест не знайшов зв'язку з нерівним просіданням."
-   }
-  },
-  {
    "id": "water",
    "kind": "lines",
    "file": "ctx_water.geojson",
@@ -397,30 +381,6 @@
    "by_theme": true,
    "z": 1.1,
    "attribution": "© ESA WorldCover 2021 (CC-BY 4.0)"
-  },
-  {
-   "id": "blocks",
-   "kind": "image",
-   "file": "ctx_blocks.png",
-   "bounds": [
-    -99.32,
-    19.169999999999998,
-    -98.82,
-    19.58
-   ],
-   "style": "blocks",
-   "label": {
-    "en": "Blocks and streets",
-    "uk": "Квартали й вулиці"
-   },
-   "visible": false,
-   "by_theme": true,
-   "z": 1.1,
-   "attribution": "© ESA WorldCover 2021 (CC-BY 4.0) · © OpenStreetMap contributors",
-   "note": {
-    "en": "Built-up land (ESA WorldCover, 2021) with the streets (OpenStreetMap) left white, drawn like an old town plan; darker = denser.",
-    "uk": "Забудова (ESA WorldCover, 2021), а вулиці (OpenStreetMap) лишені білими, як на старому плані міста; темніше = щільніше."
-   }
   }
  ],
  "notes": [],

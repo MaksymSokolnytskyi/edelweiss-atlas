@@ -3,7 +3,7 @@
  "label": "Scroll (parchment)",
  "paper": "#e8dcbf",
  "ink": "#3a2a1c",
- "muted": "#6a5540",
+ "muted": "#4f3d2a",
  "font": "'IM Fell English', Georgia, serif",
  "basemap": null,
  "terrain": {
@@ -22,8 +22,8 @@
    46,
    30
   ],
-  "w_min": 0.5,
-  "w_max": 2.2,
+  "w_min": 0.7,
+  "w_max": 2.6,
   "alpha": {
    "strong": 255,
    "weak": 90,
@@ -677,5 +677,12 @@
   "trees",
   "blocks"
  ],
- "font_body": "'EB Garamond', Georgia, serif"
+ "font_body": "'EB Garamond', Georgia, serif",
+ "quiet": 0.45,
+ "hatch": {
+  "max": 6,
+  "w": 1.0,
+  "min": 0.3,
+  "ink": 0.35
+ }
 }

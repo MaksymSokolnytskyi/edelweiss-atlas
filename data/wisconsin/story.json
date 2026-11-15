@@ -8,17 +8,17 @@
   {
    "section": "intro",
    "title": {
-    "en": "A year in the north woods, heard at 24 cm",
-    "uk": "Рік у північних лісах, почутий на 24 см"
+    "en": "A year in the north woods",
+    "uk": "Рік у північних лісах"
    },
    "text": [
     {
-     "en": "NISAR's L-band wave is 24 cm long. It passes through leaves and is scattered by branches, stalks and the ground. Here it watches a year of forest, fields, swamps and lakes.",
-     "uk": "Хвиля NISAR L-діапазону має довжину 24 см. Вона проходить крізь листя і розсіюється на гілках, стеблах і ґрунті. Тут вона спостерігає рік лісу, полів, боліт і озер."
+     "en": "Red hatching: the ground echoes darker than in its own summer, blue: brighter; the denser, the bigger the change.",
+     "uk": "Червоне штрихування: земля відлунює темніше, ніж власним літом, синє — яскравіше; що густіше, то більша зміна."
     },
     {
-     "en": "Each dot is a 1 km block. Its colour is the echo against the same block's own summer, seen from the same track: red is darker than summer, blue is brighter; the bigger the dot, the bigger the change.",
-     "uk": "Кожна крапка — блок 1 км. Її колір — відлуння порівняно з власним літом цього ж блоку, з того самого треку: червоне темніше за літо, синє яскравіше; що більша крапка, то більша зміна."
+     "en": "NISAR's L-band wave is 24 cm long: it passes through leaves and is scattered by branches, stalks and the ground. Each block is compared with its own summer, seen from the same track.",
+     "uk": "Хвиля NISAR L-діапазону має довжину 24 см: вона проходить крізь листя і розсіюється на гілках, стеблах і ґрунті. Кожен блок порівнюється з власним літом, знятим з того самого треку."
     }
    ],
    "facts": [
@@ -83,8 +83,8 @@
    },
    "text": [
     {
-     "en": "When the maples drop their leaves, the deciduous forest's cross-polarised (HV) echo changes no more than that of the evergreen conifers, and less than the fields'.",
-     "uk": "Коли клени скидають листя, крос-поляризоване (HV) відлуння листяного лісу змінюється не більше, ніж у вічнозелених хвойних, і менше, ніж у полів."
+     "en": "When the maples drop their leaves, the forest's HV echo changes no more than the evergreen conifers', and less than the fields'.",
+     "uk": "Коли клени скидають листя, HV-відлуння листяного лісу змінюється не більше, ніж у вічнозелених хвойних, і менше, ніж у полів."
     },
     {
      "en": "The wave is scattered by branches comparable to its length; a leaf is too thin to matter much.",
@@ -108,7 +108,31 @@
    "modes": {
     "blocks": "hv_anom_db"
    },
-   "day": "2026-10-27"
+   "day": "2026-10-27",
+   "facts": [
+    {
+     "value": "−1.6…+0.1",
+     "unit": {
+      "en": "dB",
+      "uk": "дБ"
+     },
+     "label": {
+      "en": "deciduous minus conifer forest",
+      "uk": "листяний мінус хвойний ліс"
+     }
+    },
+    {
+     "value": "2.6–4.4",
+     "unit": {
+      "en": "dB",
+      "uk": "дБ"
+     },
+     "label": {
+      "en": "fields, against 0.8–2.8 dB for forest",
+      "uk": "поля, проти 0.8–2.8 дБ у лісу"
+     }
+    }
+   ]
   },
   {
    "section": "what",
@@ -118,8 +142,12 @@
    },
    "text": [
     {
-     "en": "In late October 2025, corn fields were 3 to 8 dB brighter in HV than soybean fields: standing stalks and tall stubble make a volume, soybean stubble does not. The gap shrank from +8.4 dB (22 October) to +3.0 dB (20 November), probably as the corn was harvested.",
-     "uk": "Наприкінці жовтня 2025 року поля кукурудзи були на 3–8 дБ яскравіші в HV, ніж поля сої: стебла й висока стерня утворюють об'єм, а соєва стерня ні. Різниця зменшилась з +8,4 дБ (22 жовтня) до +3,0 дБ (20 листопада), імовірно в міру збирання кукурудзи."
+     "en": "In late October 2025, corn fields were 3 to 8 dB brighter in HV than soybean: standing stalks make a volume.",
+     "uk": "Наприкінці жовтня 2025 року поля кукурудзи були на 3–8 дБ яскравіші в HV, ніж соя: стебла, що стоять, утворюють об'єм."
+    },
+    {
+     "en": "Tall corn stubble does too; soybean stubble does not. The gap shrank from +8.4 dB (22 October) to +3.0 dB (20 November), probably as the corn was harvested.",
+     "uk": "Висока кукурудзяна стерня теж, а соєва ні. Різниця зменшилась з +8,4 дБ (22 жовтня) до +3,0 дБ (20 листопада), імовірно в міру збирання кукурудзи."
     },
     {
      "en": "A second test, on the HH/VV ratio, passed on only 3 of 5 dates: it failed.",
@@ -177,12 +205,16 @@
    },
    "text": [
     {
-     "en": "Sentinel-2 sees a field turn yellow; the radar sees its stalks cut. In 42 of 45 comparisons (a crop block seen from one track), the two harvest dates agree within 24 days. The radar sees it about two weeks after the optical change (median 13 days).",
-     "uk": "Sentinel-2 бачить, як поле жовтіє, а радар бачить, як стебла зрізають. У 42 з 45 порівнянь (блок поля з одного треку) дві дати жнив збігаються в межах 24 днів. Радар бачить їх приблизно на два тижні пізніше за оптику (медіана 13 днів)."
+     "en": "Press ▶ and watch the crop blocks turn from green to ochre as the radar sees their stalks cut.",
+     "uk": "Натисніть ▶ і дивіться, як блоки полів із зелених стають вохристими, коли радар бачить, що стебла зрізано."
     },
     {
-     "en": "Play the autumn: blocks turn from green to ochre. On the map the radar date is the median over the tracks that saw one; 21 of the 43 blocks got no radar date and stay blank.",
-     "uk": "Запустіть осінь: блоки з зелених стають вохристими. На мапі дата радара — медіана по треках, які її побачили; 21 з 43 блоків не отримали дати від радара й лишаються порожніми."
+     "en": "Sentinel-2 sees a field turn yellow; the radar sees its stalks cut. In 42 of 45 comparisons (a crop block seen from one track) the two dates agree within 24 days; the radar sees it about two weeks later (median 13 days).",
+     "uk": "Sentinel-2 бачить, як поле жовтіє, а радар — як стебла зрізають. У 42 з 45 порівнянь (блок поля з одного треку) дві дати збігаються в межах 24 днів; радар бачить це приблизно на два тижні пізніше (медіана 13 днів)."
+    },
+    {
+     "en": "On the map the radar date is the median over the tracks that saw one; 21 of the 43 blocks got no radar date and stay blank.",
+     "uk": "На мапі дата радара — медіана по треках, які її побачили; 21 з 43 блоків не отримали дати від радара й лишаються порожніми."
     }
    ],
    "camera": {
@@ -213,8 +245,12 @@
    },
    "text": [
     {
-     "en": "After harvest, bare soil is a mirror whose brightness follows its water. Rain in the three days before a pass raises the fields' HH echo (ρ = 0.64 over 13 scenes): wet soil reflects more.",
-     "uk": "Після жнив голий ґрунт — дзеркало, яскравість якого залежить від води. Дощ за три дні до прольоту піднімає відлуння полів у HH (ρ = 0,64 на 13 знімках): вологий ґрунт відбиває сильніше."
+     "en": "After harvest, the bare fields brighten in HH when it rained in the three days before a pass: wet soil reflects more.",
+     "uk": "Після жнив голі поля яскравішають у HH, якщо за три дні до прольоту йшов дощ: вологий ґрунт відбиває сильніше."
+    },
+    {
+     "en": "Bare soil is a mirror whose brightness follows its water. Rain and the fields' HH echo go together with ρ = 0.64 over 13 scenes.",
+     "uk": "Голий ґрунт — дзеркало, яскравість якого залежить від води. Дощ і HH-відлуння полів пов'язані з ρ = 0,64 на 13 знімках."
     }
    ],
    "camera": {
@@ -250,6 +286,10 @@
     {
      "en": "We expected frozen ground to keep the radar's fingerprint from pass to pass. It did not: every frozen pair was also a snowy one, and the forest lost its fingerprint under fresh snow. That test failed.",
      "uk": "Ми чекали, що мерзла земля збереже «відбиток» радара від прольоту до прольоту. Цього не сталося: кожна мерзла пара була й сніжною, і ліс під свіжим снігом втрачав відбиток. Цей тест провалився."
+    },
+    {
+     "en": "Track A76 shows the east of the window 3–4 dB darker in every scene, even in warm October, so the frost page uses track D113 (found after the tests; it does not change test W4).",
+     "uk": "Трек A76 показує схід вікна на 3–4 дБ темнішим на всіх знімках, навіть теплого жовтня, тому сторінка про мороз бере трек D113 (знайдено після тестів; на тест W4 це не впливає)."
     }
    ],
    "camera": {
@@ -269,7 +309,7 @@
    "modes": {
     "blocks": "hh_anom_db"
    },
-   "day": "2026-01-14"
+   "day": "2026-01-17"
   },
   {
    "section": "why",
@@ -279,16 +319,16 @@
    },
    "text": [
     {
-     "en": "On its way down and back, the wave crosses the ionosphere. Its polarisation turns (Faraday rotation), and its phase is delayed differently at the two ends of the band. The two measurements agree (ρ = 0.59 on 45 pairs). Pooled over the tracks, their ratio is the size physics expects: 0.017° per radian, against 0.016–0.021. The pairs share dates, so the test's p-value is optimistic.",
-     "uk": "Дорогою вниз і назад хвиля двічі проходить іоносферу. Її поляризація повертається (ефект Фарадея), а фаза запізнюється по-різному на двох краях діапазону. Обидва виміри узгоджуються (ρ = 0,59 на 45 парах). Разом по всіх треках їхнє співвідношення такого розміру, як чекає фізика: 0,017° на радіан проти 0,016–0,021. Пари мають спільні дати, тож p-значення тесту оптимістичне."
+     "en": "Crossing the ionosphere turns the wave's polarisation (Faraday rotation) and delays its phase; NISAR measures both, and they agree.",
+     "uk": "Іоносфера повертає поляризацію хвилі (ефект Фарадея) і затримує її фазу; NISAR вимірює обидва ефекти, і вони узгоджуються."
     },
     {
-     "en": "The rotation also follows the global TEC maps in size (ρ = 0.81): up to 5° on summer evenings, less at dawn. Its sign matched the maps in 35 of 50 scenes, short of the 80 % we set: that test failed.",
-     "uk": "Поворот іде й за глобальними картами TEC за величиною (ρ = 0,81): до 5° влітку ввечері, менше на світанку. Знак збігся з картами у 35 з 50 знімків, менше за поставлені 80 %: цей тест провалився."
+     "en": "The two agree with ρ = 0.59 on 45 pairs (the pairs share dates, so the p-value is optimistic). Pooled over the tracks, their ratio is the size physics expects: 0.017° per radian, against 0.016–0.021. Per track it is 0.8 to 2 times that (the dusk track D41: 2×, summer pairs only).",
+     "uk": "Обидва виміри узгоджуються з ρ = 0,59 на 45 парах (пари мають спільні дати, тож p-значення оптимістичне). Разом по треках їхнє співвідношення такого розміру, як чекає фізика: 0,017° на радіан проти 0,016–0,021. На окремих треках від 0.8 до 2 разів (вечірній трек D41 — 2×, лише літні пари)."
     },
     {
-     "en": "Found after the test: in the 2026 processing the sign agrees in 32 of 33 scenes. But the 2025-release scenes are all from autumn and winter, when the rotation is small, so release and season cannot be told apart.",
-     "uk": "Знайдено після тесту: в обробці 2026 року знак збігається у 32 з 33 знімків. Але знімки релізів 2025 року всі осінні й зимові, коли поворот малий, тож реліз і сезон тут не розрізнити."
+     "en": "The rotation follows the global TEC maps in size (ρ = 0.81), but its sign matched in only 35 of 50 scenes, short of our 80 %: failed. Found after the test: 32 of 33 match in the 2026 processing, but the 2025 scenes are all autumn and winter, so release and season cannot be told apart.",
+     "uk": "Поворот іде за глобальними картами TEC за величиною (ρ = 0,81), але знак збігся лише у 35 з 50 знімків, менше за наші 80 %: провал. Знайдено після тесту: в обробці 2026 року збігаються 32 з 33, але знімки 2025 року всі осінні й зимові, тож реліз і сезон не розрізнити."
     }
    ],
    "camera": {
@@ -300,15 +340,10 @@
     ]
    },
    "layers": [
-    "blocks",
     "water",
     "rivers",
     "places"
-   ],
-   "modes": {
-    "blocks": "hv_anom_db"
-   },
-   "day": "2026-07-23"
+   ]
   },
   {
    "section": "sure",
@@ -318,16 +353,16 @@
    },
    "text": [
     {
-     "en": "Failed, and said so: early lake ice is not clearly brighter than open water (WS3); no frost heave shows above the noise (WS7); swamp forest is not brighter in HH than upland forest (WS2a).",
-     "uk": "Провалилось, і ми це кажемо: ранній лід на озерах помітно не яскравіший за відкриту воду (WS3); морозного здимання понад шум не видно (WS7); болотний ліс не яскравіший у HH за ліс на сухому (WS2a)."
+     "en": "Four tests failed: lake ice, frost heave, swamp forest and dry afternoons show nothing clear. Parts of the product are not calibrated.",
+     "uk": "Чотири тести провалились: лід на озерах, морозне здимання, болотний ліс і сухі дні нічого чіткого не показують. Частина продукту не відкалібрована."
     },
     {
-     "en": "The product's HH–VV phase is not calibrated (forest at −120° or +140° instead of 0°). The 2025 releases have a ~1 dB HV/VH imbalance and a Faraday offset, and the noise layer is often broken.",
-     "uk": "Фаза між HH і VV у продукті не відкалібрована (ліс на −120° або +140° замість 0°). У релізах 2025 року є дисбаланс HV/VH ~1 дБ і зсув кута Фарадея, а шар шуму часто зламаний."
+     "en": "Early lake ice is not clearly brighter than open water (WS3); no frost heave shows above the noise (WS7); swamp forest is not brighter in HH than upland forest (WS2a). A dry afternoon does not dim the forest's dusk echo by more than ~0.15 dB/kPa (TW failed; this bound was computed after the test).",
+     "uk": "Ранній лід на озерах помітно не яскравіший за відкриту воду (WS3); морозного здимання понад шум не видно (WS7); болотний ліс не яскравіший у HH за ліс на сухому (WS2a). Сухий день не притлумлює вечірнє відлуння лісу більше ніж на ~0.15 дБ/кПа (TW провалився; межу пораховано після тесту)."
     },
     {
-     "en": "After removing each track's linear trend, the summer dusk HV of a deciduous forest repeats within ~0.1 dB over 9 passes (TW). Without that step it swings 0.8–2.8 dB through the year.",
-     "uk": "Після вилучення лінійного тренду кожного треку літній вечірній HV листяного лісу повторюється в межах ~0,1 дБ на 9 прольотах (TW). Без цього кроку він змінюється на 0,8–2,8 дБ за рік."
+     "en": "Not calibrated: the HH–VV phase (forest at −120° or +140° instead of 0°); the 2025 releases have a ~1 dB HV/VH imbalance and a Faraday offset; the noise layer is often broken. With each track's linear trend removed, summer dusk HV of a deciduous forest repeats within ~0.1 dB over 9 passes (TW); without that, it swings 0.8–2.8 dB through the year.",
+     "uk": "Не відкалібровано: фаза між HH і VV (ліс на −120° або +140° замість 0°); у релізах 2025 року є дисбаланс HV/VH ~1 дБ і зсув кута Фарадея; шар шуму часто зламаний. Після вилучення лінійного тренду кожного треку літній вечірній HV листяного лісу повторюється в межах ~0,1 дБ на 9 прольотах (TW); без цього він змінюється на 0,8–2,8 дБ за рік."
     }
    ],
    "camera": {
@@ -357,12 +392,12 @@
    },
    "text": [
     {
-     "en": "Its full-polarisation mode splits each echo into surface, volume and double-bounce parts. Month by month, the fields switch from surface to volume scattering and back.",
-     "uk": "Його режим повної поляризації розкладає кожне відлуння на поверхневу, об'ємну і подвійну частини. Місяць за місяцем поля перемикаються з поверхневого розсіювання на об'ємне і назад."
+     "en": "With the 2026 calibration and a few winters, these blocks could map freeze, thaw and harvest every 12 days.",
+     "uk": "З калібруванням 2026 року і кількома зимами ці блоки могли б показувати замерзання, відтавання і жнива кожні 12 днів."
     },
     {
-     "en": "With the 2026 calibration and a few winters, the same blocks could map freeze, thaw and harvest across the whole north woods every 12 days.",
-     "uk": "З калібруванням 2026 року і кількома зимами ті самі блоки могли б показувати замерзання, відтавання і жнива по всіх північних лісах кожні 12 днів."
+     "en": "NISAR's full-polarisation mode splits each echo into surface, volume and double-bounce parts. Month by month, the fields switch from surface to volume scattering and back. This page describes what the data show; it is not a test.",
+     "uk": "Режим повної поляризації NISAR розкладає кожне відлуння на поверхневу, об'ємну і подвійну частини. Місяць за місяцем поля перемикаються з поверхневого розсіювання на об'ємне і назад. Ця сторінка описує, що видно в даних; це не тест."
     }
    ],
    "camera": {

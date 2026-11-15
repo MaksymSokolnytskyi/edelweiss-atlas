@@ -42,7 +42,7 @@ const STR = {
         lg_up: "синій: земля піднімається",
         score_note: "клин = опускання району за 12 днів · угорі найшвидші, внизу нерухомі",
         score_still: "тиша", score_ref: "еталон, 0", score_sound: "звук", score_play: "програти рік",
-        more: "Детальніше ▾", less: "Коротше ▴", notes: "Нотатки до розрахунку",
+        more: "Детальніше ▸", less: "Сховати деталі ◂", alpha: "У роботі (альфа)", alpha_t: "Чернетки таблиць: дані й тексти ще не перевірені", notes: "Нотатки до розрахунку",
         score_sound_t: "кожен дзвін — ще 2 см опускання: що швидше район сідає, то частіше дзвонить; нерухомі мовчать",
         lg_change: "радар втратив відбиток між двома прольотами (сніг, вода, обвал)", lg_change_event: "пляма, що лишається: селевий потік",
         story_intro: "таблиця", story_what: "що змінилось", story_why: "чому", story_sure: "наскільки певні",
@@ -82,7 +82,7 @@ const STR = {
         lg_up: "blue: the ground rises",
         score_note: "wedge = how far the district went down in 12 days · fastest on top, still at the bottom",
         score_still: "still", score_ref: "reference, 0", score_sound: "sound", score_play: "play the year",
-        more: "Tell me more ▾", less: "Less ▴", notes: "Notes on the build",
+        more: "Tell me more ▸", less: "Hide the details ◂", alpha: "Work in progress (alpha)", alpha_t: "Draft plates: data and words not yet checked", notes: "Notes on the build",
         score_sound_t: "each chime = 2 more cm of sinking: the faster a district sinks, the more often it chimes; still ground stays silent",
         lg_change: "the radar lost the ground's fingerprint between two passes (snow, water, a slide)", lg_change_event: "the patch that stays: the debris flow",
         story_intro: "plate", story_what: "what changed", story_why: "why", story_sure: "how sure",
@@ -188,8 +188,8 @@ function textLayer(id, data, th, o) {
   return new deck.TextLayer({ id, data, getPosition: (x) => x.p, getText: (x) => x.s, getAngle: (x) => x.a,
     getSize: o.size || 11, sizeUnits: "pixels", getColor: o.color || [0, 0, 0, 255], fontFamily: th.font,
     fontWeight: (o.italic ? "italic " : "") + (o.bold ? "bold" : "normal"), getPixelOffset: o.offset || [0, 0],
-    characterSet: chars, fontSettings: { sdf: true }, outlineWidth: o.halo || o.bold ? 4 : 0,
-    outlineColor: [...(th.paper_rgb || [255, 255, 255]), 230], billboard: true });
+    characterSet: chars, fontSettings: { sdf: true, buffer: 8, radius: 14 }, outlineWidth: o.halo || o.bold ? 6 : 0,
+    outlineColor: [...(th.paper_rgb || [255, 255, 255]), 255], billboard: true });
 }
 
 // context lines (old lake, cracks, city): style by name from theme.lines; points carry names -> labels
@@ -395,15 +395,78 @@ function dateIndex() {
   return k;
 }
 
+// Engraved tint. The blocks are read as one smooth field (bilinear between block centres) and a family of long
+// parallel strokes at 45° is laid over it, as an engraver lays a tone: stroke k only shows where the strength passes
+// its own threshold (van der Corput order, so the strokes that show are always evenly spread). Weak ground stays bare
+// paper, strong ground is densely hatched; the edge of a patch is smooth, never a staircase of blocks. Diverging ramps
+// keep their sign colour; categories take the nearest block's class.
+const _hatchCache = new WeakMap();
+const vdc = (k) => { let v = 0, b = 0.5; while (k) { if (k & 1) v += b; k >>= 1; b /= 2; } return v; };
+function hatchGrid(d) {
+  if (d._grid) return d._grid;
+  // blocks sit on a metric grid (UTM), so their centres are only nearly regular in lon/lat: index them by the block size
+  const lons = d.cells.map((c) => c[0]), lats = d.cells.map((c) => c[1]), mid = (Math.min(...lats) + Math.max(...lats)) / 2;
+  const dy = d.cell_km / 111.32, dx = dy / Math.cos(mid * Math.PI / 180);
+  const g = { x0: Math.min(...lons), y0: Math.min(...lats), dx, dy, at: new Map() };
+  g.nx = Math.round((Math.max(...lons) - g.x0) / g.dx); g.ny = Math.round((Math.max(...lats) - g.y0) / g.dy);
+  if (!(g.nx < 2000 && g.ny < 2000)) { g.nx = g.ny = 0; g.at.clear(); return (d._grid = g); }   // not a block grid: draw nothing
+  for (const c of d.cells) g.at.set(Math.round((c[0] - g.x0) / g.dx) + "," + Math.round((c[1] - g.y0) / g.dy), c);
+  return (d._grid = g);
+}
+function hatchCells(d, m, color, th, tkey) {
+  const key = [th.name, m.key, tkey].join("|");
+  let byKey = _hatchCache.get(d);
+  if (!byKey) { byKey = new Map(); _hatchCache.set(d, byKey); }
+  if (byKey.has(key)) return byKey.get(key);
+  const g = hatchGrid(d), H = th.hatch || {}, per = H.max ?? 6, aMin = H.min ?? 0.3, wBase = H.w ?? 0.85;
+  const pal = m.categorical ? (th.categorical[m.categorical] || []) : (th.ramps[m.ramp] || []).map((x) => x[1]);
+  const amax = Math.max(1, ...pal.map((c) => c[3] ?? 255));
+  const ink = (th.ink.match(/[0-9a-f]{2}/gi) || ["00", "00", "00"]).map((h) => parseInt(h, 16)), inkMix = H.ink ?? 0.3;   // pale ramp colours vanish on paper
+  const cell = (i, j) => g.at.get(i + "," + j);
+  const sample = (u, v) => {                                  // u, v in block units -> [r, g, b, strength 0..1] or null
+    if (m.categorical) { const c = cell(Math.round(u), Math.round(v)); if (!c) return null; const k = color(c); return [k[0], k[1], k[2], Math.min(1, (k[3] ?? 0) / amax)]; }
+    const i = Math.floor(u), j = Math.floor(v), fu = u - i, fv = v - j;
+    let s = 0, w = 0;
+    for (const [di, dj, wt] of [[0, 0, (1 - fu) * (1 - fv)], [1, 0, fu * (1 - fv)], [0, 1, (1 - fu) * fv], [1, 1, fu * fv]]) {
+      const c = cell(i + di, j + dj), x = c && cellValue(d, m, c);
+      if (x != null && isFinite(x) && wt > 0) { s += x * wt; w += wt; }
+    }
+    if (w < 0.35) return null;                                // the field ends half a block past the last block
+    const k = ramp(th.ramps[m.ramp], s / w);
+    return [k[0], k[1], k[2], Math.min(1, (k[3] ?? 0) / amax)];
+  };
+  const out = [], ds = 0.2, ks = Math.ceil((g.nx + g.ny + 2) * per);
+  for (let k = 0; k <= ks; k++) {                             // stroke k: u - v = c
+    const c = -g.ny - 1 + k / per, need = aMin + (1 - aMin) * vdc(k % 64) * 0.999;
+    let run = null, col = null;
+    const flush = () => { if (run && run.length > 1) out.push({ p: run, c: [...col.map((x, i) => Math.round(x * (1 - inkMix) + ink[i] * inkMix)), 240], w: wBase }); run = null; };
+    for (let u = Math.max(-0.5, c - 0.5); u <= Math.min(g.nx + 0.5, g.ny + 0.5 + c); u += ds) {
+      const v = u - c, smp = sample(u, v), on = smp && smp[3] >= need;
+      const same = on && col && smp[0] === col[0] && smp[1] === col[1] && smp[2] === col[2];
+      if (!on) { flush(); continue; }
+      const pt = [g.x0 + u * g.dx, g.y0 + v * g.dy];
+      if (run && (m.categorical ? same : true)) { run.push(pt); col = smp.slice(0, 3); }
+      else { flush(); run = [pt]; col = smp.slice(0, 3); }
+    }
+    flush();
+  }
+  if (byKey.size > 40) byKey.clear();
+  byKey.set(key, out);
+  return out;
+}
+
 function buildLayers() {
   const th = state.theme, man = state.man, L = [];
   if (!man) return L;
   const order = { cells: 0, "hachures-static": 1, lines: 1.2, contours: 1.5, polygons: 2, "hachures-time": 3, card: 4 };   // cells under strokes
   const zOf = (l) => l.z ?? order[l.kind] ?? 2;
+  const story = man.layers.some((l) => state.visible[l.id] && (l.kind === "hachures-time" || l.kind === "cells"));
+  const quiet = story ? th.quiet ?? 0.5 : 1;
   for (const lay of [...man.layers].sort((a, b) => zOf(a) - zOf(b))) {
     if (!state.visible[lay.id]) continue;
     const d = state.data[lay.id];
     if (!d) continue;
+    const from = L.length;
     if (lay.kind === "hachures-static") {
       const c = th.terrain;
       L.push(new deck.PathLayer({ id: lay.id, data: d.features, widthUnits: "pixels", capRounded: true,
@@ -453,6 +516,10 @@ function buildLayers() {
           getPolygon: (c) => { const k = half / Math.cos(c[1] * Math.PI / 180);
             return [[c[0] - k, c[1] - half], [c[0] + k, c[1] - half], [c[0] + k, c[1] + half], [c[0] - k, c[1] + half]]; },
           getFillColor: color, updateTriggers: { getFillColor: [th.name, m.key, tkey] } }));
+      } else if (th.cells_as !== "dots") {
+        L.push(new deck.PathLayer({ id: lay.id + "-" + m.key + "-h", data: hatchCells(d, m, color, th, tkey),
+          widthUnits: "pixels", capRounded: true, getPath: (h) => h.p, getColor: (h) => h.c, getWidth: (h) => h.w,
+          updateTriggers: { getColor: [th.name, m.key, tkey] } }));
       } else {
         // stipple, the engraver's way to lay a tone: one dot per block, its size carries the strength (the ramp's own
         // alpha), the ink stays solid; weak or neutral blocks leave the paper bare instead of a pale square
@@ -483,6 +550,9 @@ function buildLayers() {
         getLineWidth: (f) => (f.properties.part === "top_edge" ? s.edge_width || s.width * 2 : s.width),
         updateTriggers: { getFillColor: th.name, getLineColor: th.name, getLineWidth: th.name } }));
     }
+    if (quiet < 1 && ["hachures-static", "lines", "image"].includes(lay.kind) && !lay.loud) {
+      for (let i = from; i < L.length; i++) if (!(L[i] instanceof deck.TextLayer)) L[i] = L[i].clone({ opacity: (L[i].props.opacity ?? 1) * quiet });
+    }
   }
   if (layersOf("surface").some((l) => state.visible[l.id])) {
     if (state.section) L.push(...sectionMapLayers(th));
@@ -503,7 +573,7 @@ function buildLayers() {
       radiusUnits: "pixels", getRadius: 6, stroked: true, filled: false, lineWidthUnits: "pixels", getLineWidth: 2,
       getLineColor: [...th.velocity.color, 255] }));
   }
-  return L;
+  return [...L.filter((l) => !(l instanceof deck.TextLayer)), ...L.filter((l) => l instanceof deck.TextLayer)];   // words on top
 }
 
 function redraw() { overlay && overlay.setProps({ layers: buildLayers() }); }
@@ -1370,7 +1440,7 @@ function goPlate(id) {
 function showCover(on) {
   if (on && !atlas.idx?.atlas) return;
   if (on) renderCover();
-  $("cover").classList.toggle("hidden", !on); glossTip(null);
+  $("cover").classList.toggle("hidden", !on); glossTip(null); renderSheet();
   setParam("cover", on ? "1" : null);
   if (on) $("cover").scrollTop = 0;
   else if (map) { map.resize(); redraw(); drawFrame(); }      // the map may have been laid out while the cover hid it
@@ -1382,13 +1452,17 @@ function renderCover() {
     `<h2>${label(c.title)}</h2><p class="cv-intro">${label(c.intro)}</p><ol>` +
     c.scenes.map((id) => { const sc = sceneById(id); return sc ? `<li><a href="?scene=${id}" data-id="${id}">${label(sc.title)}</a>` +
       `<span>${label(sc.blurb || sc.subtitle)}</span></li>` : ""; }).join("") + `</ol></section>`).join("");
+  const alpha = (atlas.idx.alpha || []).map(sceneById).filter(Boolean);
+  const alphaHtml = alpha.length ? `<details class="cv-alpha"><summary>${T("alpha")}</summary><p>${T("alpha_t")}</p><ul>` +
+    alpha.map((sc) => `<li><a href="?scene=${sc.id}" data-id="${sc.id}">${label(sc.title)}</a> <span>${label(sc.blurb || sc.subtitle)}</span></li>`).join("") +
+    `</ul></details>` : "";
   const words = [...atlas.gloss].sort((a, b) => label(a.title).localeCompare(label(b.title)))
     .map((g) => `<div><b>${label(g.title)}.</b> ${label(g.text)}</div>`).join("");
   $("cover").innerHTML = `<div class="cv-page"><div class="cv-kicker">${label(A.kicker)}</div>` +
     `<img class="cv-flower" src="edelweiss.svg" alt="" width="200" height="222">` +
     `<h1>${label(A.title)}</h1><div class="cv-sub">${label(A.subtitle)}</div><div class="cv-rule"></div>` +
     `<p class="cv-lede">${label(A.lede)}</p><div class="cv-chapters">${chapters}</div>` +
-    (words ? `<details class="cv-words"><summary>${T("glossary")}</summary><div class="cv-wgrid">${words}</div></details>` : "") +
+    alphaHtml + (words ? `<details class="cv-words"><summary>${T("glossary")}</summary><div class="cv-wgrid">${words}</div></details>` : "") +
     `<footer><div>${label(A.credits)}</div><a class="cv-lang" href="?cover=1&lang=${other}">${other === "uk" ? "Українська" : "English"}</a></footer></div>`;
   $("cover").querySelectorAll("a[data-id]").forEach((a) => (a.onclick = (e) => { e.preventDefault(); goPlate(a.dataset.id); }));
   glossify([$("cover").querySelector(".cv-sub"), $("cover").querySelector(".cv-lede")]);
@@ -1474,7 +1548,7 @@ function storyOpen(on, page, instant) {
   $("story").classList.toggle("hidden", !state.storyOn);
   $("story-open").classList.toggle("hidden", !state.storyData || state.storyOn); $("story-open").textContent = T("story_open");
   if (state.storyOn) { applyPage(page ?? state.page ?? 0, instant); return; }
-  state.marks = []; drawNotes(); setParam("page", null);
+  state.marks = []; drawNotes(); setParam("page", null); renderSheet();
   renderPanel(); redraw(); drawFrame();
 }
 
@@ -1523,17 +1597,18 @@ function renderStoryCard() {
   const tabs = S.pages.map((q, k) => `<button class="tab${k === i ? " on" : ""}" data-k="${k}" title="${label(q.title)}">${ROMAN[k] || k + 1}</button>`).join("");
   const timed = needsTime() && state.man.dates.length > 1;
   // one paragraph up front, the rest behind "Tell me more"; "How sure" pages show everything (doubts are never folded away)
-  const keep = p.keep ?? (p.section === "sure" ? 99 : 1);
+  const keep = p.keep ?? 1;
+  state.sheetParas = (p.text || []).slice(keep);
   const ch = chapterOf(state.scene), last = i === n - 1, at = atlas.order.indexOf(state.scene);
   const nextId = last && at >= 0 ? atlas.order[at + 1] : null, nextSc = nextId && sceneById(nextId);
   const onward = !last || at < 0 ? "" : nextSc
     ? `<div class="st-onward">${T("next_plate")}${chapterOf(nextId) !== ch ? ` · ${ROMAN[chapterOf(nextId)]}` : ""}: <a href="#" data-go="${nextId}">${label(nextSc.title)} →</a></div>`
     : (atlas.idx?.atlas ? `<div class="st-onward"><a href="#" data-go="">${T("the_end")}</a></div>` : "");
-  box.innerHTML = `<div class="st-kicker">` + (atlas.idx?.atlas ? `<a href="#" class="st-toc" id="st-toc" title="Edelweiss">${T("contents")}</a>` : "") +
+  box.innerHTML = `<div class="st-kicker">` + (atlas.idx?.atlas ? `<a href="#" class="st-toc" id="st-toc" title="Edelweiss">${T("contents")}</a>`
+      : $("back-atlas") ? `<a href="${$("back-atlas").getAttribute("href")}" class="st-toc" title="Edelweiss">${T("contents")}</a>` : "") +   // a packed plate of the atlas
     `${ch >= 0 ? ROMAN[ch] + " · " : ""}${label(S.title)} · ${T("story_" + (p.section || "intro"))}</div>` +
     `<h2>${label(p.title)}</h2>${(p.text || []).slice(0, keep).map((t) => `<p>${label(t)}</p>`).join("")}` +
-    ((p.text || []).length > keep ? `<div class="st-more${state.moreOpen ? " open" : ""}">${p.text.slice(keep).map((t) => `<p>${label(t)}</p>`).join("")}</div>` +
-      `<button class="st-more-btn" id="st-more">${state.moreOpen ? T("less") : T("more")}</button>` : "") +
+    (state.sheetParas.length ? `<button class="st-more-btn" id="st-more">${state.moreOpen ? T("less") : T("more")}</button>` : "") +
     (facts ? `<div class="facts">${facts}</div>` : "") + (legend ? `<div class="st-legend">${legend}</div>` : "") +
     (timed ? `<div class="st-time"><button id="st-play">${state.playing ? "❚❚" : "▶"}</button><span id="st-date"></span></div>` : "") + onward +
     `<nav><button id="st-prev"${i ? "" : " disabled"}>← ${T("story_back")}</button><span class="tabs">${tabs}</span>` +
@@ -1548,9 +1623,22 @@ function renderStoryCard() {
   box.querySelectorAll(".tab").forEach((b) => (b.onclick = () => applyPage(+b.dataset.k)));
   $("st-explore").onclick = (e) => { e.preventDefault(); storyOpen(false); };
   if ($("st-more")) $("st-more").onclick = () => {             // the choice is kept from page to page
-    state.moreOpen = !state.moreOpen; box.querySelector(".st-more").classList.toggle("open", state.moreOpen);
-    $("st-more").textContent = state.moreOpen ? T("less") : T("more"); };
+    state.moreOpen = !state.moreOpen; renderSheet(); $("st-more").textContent = state.moreOpen ? T("less") : T("more"); };
+  renderSheet();
   if (timed) $("st-play").onclick = togglePlay;
+}
+
+// the detail sheet: a second paper beside the story card, only on request
+function renderSheet() {
+  const sh = $("sheet"), paras = state.sheetParas || [];
+  if (!state.storyOn || !state.moreOpen || !paras.length || coverOn()) { sh.classList.add("hidden"); return; }
+  sh.innerHTML = `<button class="sh-x" id="sh-x" title="${T("less")}">✕</button>` + paras.map((t) => `<p>${label(t)}</p>`).join("");
+  sh.classList.remove("hidden");
+  const r = $("story").getBoundingClientRect();
+  if (innerWidth > 760) { sh.style.left = r.right + 10 + "px"; sh.style.top = r.top + "px"; }
+  else { sh.style.left = "12px"; sh.style.top = Math.min(innerHeight - 160, r.bottom + 8) + "px"; }
+  $("sh-x").onclick = () => { state.moreOpen = false; renderSheet(); const b = $("st-more"); if (b) b.textContent = T("more"); };
+  glossify([...sh.querySelectorAll("p")]);
 }
 
 function drawNotes() {             // engraved call-outs: a ring on the place, a leader line, an italic note
@@ -1587,6 +1675,7 @@ async function loadScene(id) {
   $("loading").textContent = T("loading"); $("loading").classList.remove("hidden");
   try {
     const man = await getJSON(`data/${id}/manifest.json`);
+    man.layers = man.layers.filter((l) => l.kind !== "rhythm" || q.get("score") === "1");
     const data = {};
     await Promise.all(man.layers.map(async (l) => {
       if (l.kind !== "image") { data[l.id] = await getJSON(`data/${id}/${l.file}`); return; }
@@ -1612,9 +1701,12 @@ async function loadScene(id) {
     state.maxDay = n > 1 ? Math.round((new Date(man.dates[n - 1]) - new Date(man.dates[0])) / DAY) : 0;
     $("time").max = state.maxDay;
     renderPanel();
+    map.setMaxBounds(null);
     const wide = innerWidth > 700, sh = placeScore();               // keep the city clear of the score strip
     map.fitBounds([[man.bbox[0], man.bbox[1]], [man.bbox[2], man.bbox[3]]],
                   { padding: wide ? { top: 20, bottom: 20 + sh, right: 20, left: 330 } : { top: 20, bottom: 20 + sh, left: 20, right: 20 }, duration: 0 });
+    const [w0, s0, e0, n0] = man.bbox, mx = (e0 - w0) * 0.12, my = (n0 - s0) * 0.12;
+    map.setMaxBounds([[w0 - mx, s0 - my], [e0 + mx, n0 + my]]);
     setDay(state.maxDay);
     const first = !state.loadedOnce; state.loadedOnce = true;
     if (state.storyData && q.get("story") !== "0") storyOpen(true, first ? (+q.get("page") || 1) - 1 : 0, true);
@@ -1641,7 +1733,7 @@ async function main() {
   document.querySelectorAll("[data-i18n]").forEach((e) => (e.textContent = T(e.dataset.i18n)));
   const idx = await getJSON("data/scenes.json");
   const sceneSel = $("scene"), themeSel = $("theme");
-  idx.scenes.forEach((s) => sceneSel.add(new Option(label(s.title), s.id)));
+  idx.scenes.forEach((s) => sceneSel.add(new Option(label(s.title) + ((idx.alpha || []).includes(s.id) ? " · alpha" : ""), s.id)));
   atlas.idx = idx; atlas.order = (idx.chapters || []).flatMap((c) => c.scenes);
   try { atlas.gloss = (await getJSON("data/glossary.json")).terms || []; } catch (e) { atlas.gloss = []; }   // optional
   glossForms(); glossEvents();
@@ -1658,7 +1750,7 @@ async function main() {
   map.addControl(overlay);
   map.on("move", () => { drawFrame(); drawNotes(); });
   map.on("zoomend", () => { if (Object.values(state.theme?.lines || {}).some((x) => x.airy || x.collide || x.zoom_fade)) redraw(); });
-  addEventListener("resize", renderScore);
+  addEventListener("resize", () => { renderScore(); renderSheet(); });
   map.on("mousemove", (e) => readout(e.lngLat.lng, e.lngLat.lat));
   map.on("click", (e) => {
     if (layersOf("surface").some((l) => state.visible[l.id])) {           // section mode: two clicks = a new cut

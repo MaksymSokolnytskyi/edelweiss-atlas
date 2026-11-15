@@ -179,3 +179,23 @@ body[data-theme="scroll"] #story h2 { font-size: 27px; }
 }
 #story nav button { white-space: nowrap; }
 #story nav .tabs { flex-wrap: wrap; justify-content: center; }
+
+/* the detail sheet beside the story card */
+#sheet { position: fixed; z-index: 4; width: 340px; max-width: calc(100% - 24px); max-height: calc(100% - 24px); overflow: auto;
+         box-sizing: border-box; padding: 16px 18px 12px; background: var(--panel-bg); color: var(--ink); border: 1px solid var(--panel-border);
+         font-family: var(--font-body, var(--font)); font-size: 15.5px; line-height: 1.45; animation: st-turn .35s ease-out; }
+#sheet.hidden { display: none; }
+#sheet p { margin: 0 0 10px; }
+#sheet .sh-x { float: right; border: none; margin: -6px -8px 0 6px; font-size: 15px; color: var(--muted); }
+body[data-theme="scroll"] #sheet { border-style: double; border-width: 3px; }
+/* legibility: running text a size up, quiet text darker */
+#story p { font-size: 16px; line-height: 1.42; }
+#story .st-more-btn { font-size: 14.5px; color: var(--ink); }
+#cover .cv-alpha { margin-top: 22px; text-align: left; font-size: 14.5px; color: #4f3d2a; }
+#cover .cv-alpha summary { cursor: pointer; text-align: center; font-family: var(--font); font-style: italic; font-size: 16px; }
+#cover .cv-alpha ul { list-style: none; padding: 0; margin: 8px auto 0; max-width: 640px; }
+#cover .cv-alpha li { margin: 0 0 6px; }
+#cover .cv-alpha li a { font-size: 16px; }
+#cover .cv-alpha li span { display: inline; font-size: 14px; }
+#cover .cv-alpha p { text-align: center; margin: 6px 0 0; }
+#cover .cv-intro, #cover li span, #cover footer, #cover .cv-kicker { color: #4f3d2a; }

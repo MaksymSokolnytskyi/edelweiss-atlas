@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IM+Fell+English:ital@0;1&display=swap">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
-  <link rel="stylesheet" href="style.css?v=1115h">
+  <link rel="stylesheet" href="style.css?v=1115j">
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <script src="https://unpkg.com/deck.gl@8.9.36/dist.min.js"></script>
 </head>
@@ -21,6 +21,7 @@
   <div id="score" class="hidden"></div>
   <svg id="notes" class="hidden"></svg>
   <article id="story" class="hidden"></article>
+  <aside id="sheet" class="hidden"></aside>
   <div id="cover" class="hidden"></div>
   <div id="gloss" class="hidden" role="tooltip"></div>
 
@@ -36,7 +37,7 @@
     <section>
       <label><span data-i18n="scene">Place</span>
         <select id="scene"></select></label>
-      <label><span data-i18n="theme">Style</span>
+      <label class="hidden"><span data-i18n="theme">Style</span>
         <select id="theme"></select></label>
     </section>
 
@@ -63,6 +64,6 @@
     <footer id="stats"></footer>
   </aside>
 
-  <script type="module" src="app.js?v=1115h"></script>
+  <script type="module" src="app.js?v=1115j"></script>
 </body>
 </html>

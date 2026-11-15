@@ -13,8 +13,8 @@
    "uk": "Атлас рухомої землі, вигравіюваний з радара NISAR"
   },
   "lede": {
-   "en": "Seven plates in three stories. Each plate is one place and one kind of change, drawn the way nineteenth-century engravers drew mountains, and each one tells you how sure it is. Hover a dotted word for its meaning.",
-   "uk": "Сім таблиць у трьох історіях. Кожна таблиця — одне місце й один вид змін, намальований так, як гравери XIX століття малювали гори, і кожна каже, наскільки вона певна. Наведіть на слово, підкреслене крапками, щоб побачити пояснення."
+   "en": "Five plates in three stories. Each plate is one place and one kind of change, drawn the way nineteenth-century engravers drew mountains, and each one tells you how sure it is. Hover a dotted word for its meaning.",
+   "uk": "П'ять таблиць у трьох історіях. Кожна таблиця — одне місце й один вид змін, намальований так, як гравери XIX століття малювали гори, і кожна каже, наскільки вона певна. Наведіть на слово, підкреслене крапками, щоб побачити пояснення."
   },
   "credits": {
    "en": "Made in Dnipro, Ukraine. NISAR data: NASA/JPL and ISRO via the ASF DAAC. Relief: Copernicus DEM. Land cover: ESA WorldCover. Map context: © OpenStreetMap contributors. NASA does not endorse any non-U.S. Government entity.",
@@ -25,32 +25,30 @@
   {
    "id": "sinking",
    "title": {
-    "en": "The ground goes down, the ground comes up",
-    "uk": "Земля опускається, земля здіймається"
+    "en": "Where the ground goes down",
+    "uk": "Де земля опускається"
    },
    "intro": {
-    "en": "A city pumps its water, a mine takes its coal, magma fills a chamber: slow motion of centimetres a year, read from orbit.",
-    "uk": "Місто викачує воду, шахта забирає вугілля, магма наповнює камеру: повільний рух на сантиметри за рік, прочитаний з орбіти."
+    "en": "A city pumps its water, a mine takes its coal: the ground above settles by centimetres a year, and the radar reads it from orbit.",
+    "uk": "Місто викачує воду, шахта забирає вугілля: земля над ними осідає на сантиметри за рік, і радар читає це з орбіти."
    },
    "scenes": [
     "mexico-city-asc",
-    "ostrava-asc",
-    "reykjanes"
+    "ostrava-asc"
    ]
   },
   {
-   "id": "sudden",
+   "id": "rising",
    "title": {
-    "en": "Sudden change",
-    "uk": "Раптові зміни"
+    "en": "Where the ground comes up",
+    "uk": "Де земля здіймається"
    },
    "intro": {
-    "en": "An earthquake moves a coast in seconds, a debris flow rewrites a valley in minutes. Between two passes twelve days apart the radar sees what moved and what is gone.",
-    "uk": "Землетрус зсуває узбережжя за секунди, сель переписує долину за хвилини. Між двома прольотами з різницею у дванадцять днів радар бачить, що зрушило і чого вже немає."
+    "en": "Magma fills a chamber under Iceland and the ground swells like a breath, until it breaks out.",
+    "uk": "Магма наповнює камеру під Ісландією, і земля здіймається, ніби вдих, доки не прорветься назовні."
    },
    "scenes": [
-    "panama-quake",
-    "langtang-asc"
+    "reykjanes"
    ]
   },
   {
@@ -111,32 +109,6 @@
    }
   },
   {
-   "id": "panama-quake",
-   "title": {
-    "en": "Panama M7.7 earthquake",
-    "uk": "Землетрус M7.7 у Панамі"
-   },
-   "subtitle": "2026-10-09 · fault estimate from two NISAR passes, with a confidence flag",
-   "kind": "quake",
-   "blurb": {
-    "en": "The M7.7 earthquake of 9 October 2026 from two passes, with a confidence flag.",
-    "uk": "Землетрус M7.7 9 жовтня 2026 року за двома прольотами, з позначкою певності."
-   }
-  },
-  {
-   "id": "langtang-asc",
-   "title": {
-    "en": "Langtang valley, Nepal",
-    "uk": "Долина Лангтанг, Непал"
-   },
-   "subtitle": "Debris-flow footprint: where the radar lost the ground's fingerprint",
-   "kind": "terrain+footprint",
-   "blurb": {
-    "en": "Where the radar lost the ground's fingerprint: the footprint of a debris flow.",
-    "uk": "Де радар утратив відбиток землі: слід селевого потоку."
-   }
-  },
-  {
    "id": "central-valley-asc",
    "title": {
     "en": "Central Valley, California",
@@ -161,6 +133,36 @@
     "en": "A year of forest, fields, swamps and lakes in the radar echo.",
     "uk": "Рік лісу, полів, боліт і озер у відлунні радара."
    }
+  },
+  {
+   "id": "panama-quake",
+   "title": {
+    "en": "Panama M7.7 earthquake",
+    "uk": "Землетрус M7.7 у Панамі"
+   },
+   "subtitle": "2026-10-09 · fault estimate from two NISAR passes, with a confidence flag",
+   "kind": "quake",
+   "blurb": {
+    "en": "The M7.7 earthquake of 9 October 2026 from two passes, with a confidence flag.",
+    "uk": "Землетрус M7.7 9 жовтня 2026 року за двома прольотами, з позначкою певності."
+   }
+  },
+  {
+   "id": "langtang-asc",
+   "title": {
+    "en": "Langtang valley, Nepal",
+    "uk": "Долина Лангтанг, Непал"
+   },
+   "subtitle": "Debris-flow footprint: where the radar lost the ground's fingerprint",
+   "kind": "terrain+footprint",
+   "blurb": {
+    "en": "Where the radar lost the ground's fingerprint: the footprint of a debris flow.",
+    "uk": "Де радар утратив відбиток землі: слід селевого потоку."
+   }
   }
+ ],
+ "alpha": [
+  "panama-quake",
+  "langtang-asc"
  ]
 }

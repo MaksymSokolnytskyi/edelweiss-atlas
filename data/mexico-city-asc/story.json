@@ -1,1 +1,315 @@
-{"title":{"en":"Mexico City","uk":"Мехіко"},"note":"Pages of the Mexico City plate. Each page sets the camera, the layers, the date and the words; the web map only plays them. Layer ids: see web/data/mexico-city-asc/manifest.json. Text is short on purpose: a page is read in ~20 seconds.","pages":[{"section":"intro","title":{"en":"A city sinking into its old lake","uk":"Місто, що тоне у власному озері"},"text":[{"en":"Mexico City stands on the bed of the lakes the Aztecs once built on. Every 12 days the NISAR radar measured the ground from space, by day or night, through clouds.","uk":"Мехіко стоїть на дні озер, на яких колись будували ацтеки. Кожні 12 днів радар NISAR вимірював землю з космосу, вдень і вночі, крізь хмари."},{"en":"In one year, parts of the city went down by about 30 cm.","uk":"За один рік частини міста опустились приблизно на 30 см."}],"facts":[{"value":"−32","unit":{"en":"cm/yr","uk":"см/рік"},"label":{"en":"fastest neighbourhood, ±2.5","uk":"найшвидший район, ±2.5"}},{"value":"28","label":{"en":"radar pairs, Oct 2025 – Oct 2026","uk":"пар знімків, жовт. 2025 – жовт. 2026"}},{"value":"<1","unit":{"en":"cm/yr","uk":"см/рік"},"label":{"en":"from the GPS station at the airport","uk":"різниця з GPS-станцією в аеропорту"}}],"camera":{"bbox":[-99.32,19.17,-98.82,19.58]},"layers":["terrain","velocity","lake","peaks","places","trees","blocks"],"day":"end"},{"section":"what","title":{"en":"Watch the ground go down","uk":"Дивіться, як опускається земля"},"text":[{"en":"Each red wedge points downhill, into the sinking bowl. As the year plays, the wedges grow: every new ring of strokes is 2 cm more.","uk":"Кожен червоний клин вказує вниз, у чашу просідання. Поки програється рік, клини ростуть: кожне нове кільце штрихів — ще 2 см."},{"en":"Dashed strokes mark places where the radar is less sure.","uk":"Пунктир позначає місця, де радар менш певний."}],"camera":{"bbox":[-99.2,19.22,-98.86,19.52]},"layers":["terrain","velocity","contours","peaks","trees","blocks"],"day":"start","play":true,"legend":true},{"section":"why","title":{"en":"Why here: the lakebed clay","uk":"Чому тут: глина озерного дна"},"text":[{"en":"The sinking follows the shores of the old lakes almost exactly. The city pumps most of its water from under its own feet, and the soft lake clay dries and compacts like a sponge.","uk":"Просідання майже точно повторює береги старих озер. Місто бере більшу частину води з-під власних ніг, і м'яка озерна глина висихає та стискається, як губка."},{"en":"Volcanic hills stand on rock and barely move.","uk":"Вулканічні пагорби стоять на скелі й майже не рухаються."}],"camera":{"bbox":[-99.25,19.2,-98.86,19.58]},"layers":["terrain","velocity","lake","water","canals","peaks"],"day":"end","marks":[{"lon":-99.018,"lat":19.408,"text":{"en":"Nezahualcóyotl: −30 cm/yr","uk":"Несауалькойотль: −30 см/рік"},"dx":46,"dy":-18},{"lon":-98.99,"lat":19.47,"text":{"en":"old Lake Texcoco: −20 cm/yr","uk":"старе озеро Тескоко: −20 см/рік"},"dx":40,"dy":-26},{"lon":-99.0925,"lat":19.3589,"text":{"en":"Cerro de la Estrella, volcanic: still","uk":"Серро-де-ла-Естрелья, вулкан: нерухомий"},"dx":-40,"dy":34},{"lon":-99.115,"lat":19.55,"text":{"en":"Sierra de Guadalupe: the zero point","uk":"Сьєрра-де-Гуадалупе: точка нуля"},"dx":-36,"dy":-22}]},{"section":"why","title":{"en":"Where it hurts: the bends","uk":"Де болить: на згинах"},"text":[{"en":"Sinking alone does not break a house; bending does. Where the strokes crowd together the ground tilts most, stretching pipes, rails and walls.","uk":"Саме по собі опускання будинок не ламає, ламає згин. Де штрихи густішають, земля нахиляється найбільше і розтягує труби, рейки та стіни."},{"en":"The cut runs across the city from west to east; its little houses tilt, hugely exaggerated. The city has mapped ground cracks too; we expected them along the bends, but our test found no clear link yet.","uk":"Розріз іде містом із заходу на схід, його будиночки нахилені з величезним перебільшенням. Місто нанесло на мапу й тріщини; ми чекали їх уздовж згинів, але наш тест поки не знайшов явного зв'язку."}],"camera":{"bbox":[-99.25,19.36,-98.88,19.52]},"layers":["terrain","velocity","surface","cracks","blocks"],"cut":"cut","day":"end"},{"section":"sure","title":{"en":"How sure are we?","uk":"Наскільки ми певні?"},"text":[{"en":"A GPS station at the airport measured −27.0 cm/yr; the radar says −27.8 cm/yr at the same spot.","uk":"GPS-станція в аеропорту виміряла −27.0 см/рік, радар у тій самій точці каже −27.8 см/рік."},{"en":"Blue dots show the remaining error: the bigger the dot, the larger the error. The evening pass is twice as noisy (the afternoon air over the city is restless, often stormy), so this map uses the morning one. Strokes below 3σ are dashed; noise below 1σ is not drawn.","uk":"Сині крапки показують похибку, що лишилась: що більша крапка, то більша похибка. Вечірній прохід удвічі шумніший (по обіді повітря над містом неспокійне, часто з грозами), тому ця мапа з ранкового. Штрихи нижче 3σ пунктирні, шум нижче 1σ не малюється."}],"camera":{"bbox":[-99.3,19.2,-98.84,19.57]},"layers":["terrain","velocity","grid","peaks"],"modes":{"grid":"sigma_cm_yr"},"day":"end","marks":[{"lon":-99.0684,"lat":19.4317,"text":{"en":"GPS station MMX1: −27.0 · radar: −27.8 cm/yr","uk":"GPS-станція MMX1: −27.0 · радар: −27.8 см/рік"},"dx":40,"dy":-34}]},{"section":"next","title":{"en":"What else NISAR can tell here","uk":"Що ще NISAR може розповісти тут"},"text":[{"en":"Both passes together split the motion into up-down and east-west.","uk":"Два проходи разом розкладають рух на вертикаль і схід–захід."},{"en":"Its backscatter images (GCOV) follow water: near Xico a lake has been growing on the sunken plain. That is reported, not yet measured by us.","uk":"Його знімки яскравості (GCOV) стежать за водою: біля Шико на просілій рівнині росте озеро. Це відомо з літератури, ми ще не вимірювали."},{"en":"A fresh picture every 12 days could warn the metro and the water network where bending speeds up.","uk":"Свіжа картина кожні 12 днів може попереджати метро і водогін, де згин пришвидшується."}],"camera":{"bbox":[-99.32,19.17,-98.82,19.58]},"layers":["terrain","velocity","lake","water","canals","places","trees","blocks"],"day":"end","marks":[{"lon":-98.945,"lat":19.275,"text":{"en":"Xico: a lake on sunken land","uk":"Шико: озеро на просілій землі"},"dx":-46,"dy":44}]}]}
+{
+ "title": {
+  "en": "Mexico City",
+  "uk": "Мехіко"
+ },
+ "note": "Pages of the Mexico City plate. Each page sets the camera, the layers, the date and the words; the web map only plays them. Layer ids: see web/data/mexico-city-asc/manifest.json. Text is short on purpose: a page is read in ~20 seconds.",
+ "pages": [
+  {
+   "section": "intro",
+   "title": {
+    "en": "A city sinking into its old lake",
+    "uk": "Місто, що тоне у власному озері"
+   },
+   "text": [
+    {
+     "en": "Mexico City sits on an old lakebed; the red strokes show where it sank, in places about 30 cm in one year.",
+     "uk": "Мехіко стоїть на дні старого озера; червоні штрихи показують, де воно осіло, подекуди приблизно на 30 см за рік."
+    },
+    {
+     "en": "Every 12 days NISAR measured the ground from space, by day or night, through clouds.",
+     "uk": "Кожні 12 днів NISAR вимірював землю з космосу, вдень і вночі, крізь хмари."
+    }
+   ],
+   "facts": [
+    {
+     "value": "−32",
+     "unit": {
+      "en": "cm/yr",
+      "uk": "см/рік"
+     },
+     "label": {
+      "en": "fastest neighbourhood, ±2.5",
+      "uk": "найшвидший район, ±2.5"
+     }
+    },
+    {
+     "value": "28",
+     "label": {
+      "en": "radar pairs, Oct 2025 – Oct 2026",
+      "uk": "пар знімків, жовт. 2025 – жовт. 2026"
+     }
+    },
+    {
+     "value": "<1",
+     "unit": {
+      "en": "cm/yr",
+      "uk": "см/рік"
+     },
+     "label": {
+      "en": "from the GPS station at the airport",
+      "uk": "різниця з GPS-станцією в аеропорту"
+     }
+    }
+   ],
+   "camera": {
+    "bbox": [
+     -99.32,
+     19.17,
+     -98.82,
+     19.58
+    ]
+   },
+   "layers": [
+    "terrain",
+    "velocity",
+    "lake",
+    "peaks",
+    "places",
+    "trees"
+   ],
+   "day": "end"
+  },
+  {
+   "section": "what",
+   "title": {
+    "en": "Watch the ground go down",
+    "uk": "Дивіться, як опускається земля"
+   },
+   "text": [
+    {
+     "en": "Press ▶ and watch the red wedges grow: every new ring of strokes is 2 cm more of sinking.",
+     "uk": "Натисніть ▶ і дивіться, як ростуть червоні клини: кожне нове кільце штрихів — ще 2 см просідання."
+    },
+    {
+     "en": "Each wedge points downhill, into the sinking bowl. Dashed strokes mark places where the radar is less sure.",
+     "uk": "Кожен клин вказує вниз, у чашу просідання. Пунктир позначає місця, де радар менш певний."
+    }
+   ],
+   "camera": {
+    "bbox": [
+     -99.2,
+     19.22,
+     -98.86,
+     19.52
+    ]
+   },
+   "layers": [
+    "terrain",
+    "velocity",
+    "contours",
+    "peaks",
+    "trees"
+   ],
+   "day": "start",
+   "play": true,
+   "legend": true
+  },
+  {
+   "section": "why",
+   "title": {
+    "en": "Why here: the lakebed clay",
+    "uk": "Чому тут: глина озерного дна"
+   },
+   "text": [
+    {
+     "en": "Compare the strokes with the old lake shores: the sinking follows them almost exactly, while the volcanic hills barely move.",
+     "uk": "Порівняйте штрихи з берегами старих озер: просідання майже точно їх повторює, а вулканічні пагорби майже не рухаються."
+    },
+    {
+     "en": "The city pumps most of its water from under its own feet, and the soft lake clay dries and compacts like a sponge. The hills stand on rock.",
+     "uk": "Місто бере більшу частину води з-під власних ніг, і м'яка озерна глина висихає та стискається, як губка. Пагорби стоять на скелі."
+    }
+   ],
+   "camera": {
+    "bbox": [
+     -99.25,
+     19.2,
+     -98.86,
+     19.58
+    ]
+   },
+   "layers": [
+    "terrain",
+    "velocity",
+    "lake",
+    "water",
+    "canals",
+    "peaks"
+   ],
+   "day": "end",
+   "marks": [
+    {
+     "lon": -99.018,
+     "lat": 19.408,
+     "text": {
+      "en": "Nezahualcóyotl: −30 cm/yr",
+      "uk": "Несауалькойотль: −30 см/рік"
+     },
+     "dx": 46,
+     "dy": -18
+    },
+    {
+     "lon": -98.99,
+     "lat": 19.47,
+     "text": {
+      "en": "old Lake Texcoco: −20 cm/yr",
+      "uk": "старе озеро Тескоко: −20 см/рік"
+     },
+     "dx": 40,
+     "dy": -26
+    },
+    {
+     "lon": -99.0925,
+     "lat": 19.3589,
+     "text": {
+      "en": "Cerro de la Estrella, volcanic: still",
+      "uk": "Серро-де-ла-Естрелья, вулкан: нерухомий"
+     },
+     "dx": -40,
+     "dy": 34
+    },
+    {
+     "lon": -99.115,
+     "lat": 19.55,
+     "text": {
+      "en": "Sierra de Guadalupe: the zero point",
+      "uk": "Сьєрра-де-Гуадалупе: точка нуля"
+     },
+     "dx": -36,
+     "dy": -22
+    }
+   ]
+  },
+  {
+   "section": "why",
+   "title": {
+    "en": "Where it hurts: the bends",
+    "uk": "Де болить: на згинах"
+   },
+   "text": [
+    {
+     "en": "Where the strokes crowd together the ground bends most, and bending, not sinking alone, is what stretches pipes, rails and walls.",
+     "uk": "Де штрихи густішають, земля згинається найбільше, а труби, рейки та стіни розтягує саме згин, а не просто опускання."
+    },
+    {
+     "en": "The cut runs across the city from west to east; its little houses tilt, hugely exaggerated. Whether damage really gathers at the bends is not shown: our test found no clear link yet.",
+     "uk": "Розріз іде містом із заходу на схід, його будиночки нахилені з величезним перебільшенням. Чи справді руйнування збираються на згинах, не доведено: наш тест поки не знайшов явного зв'язку."
+    }
+   ],
+   "camera": {
+    "bbox": [
+     -99.25,
+     19.36,
+     -98.88,
+     19.52
+    ]
+   },
+   "layers": [
+    "terrain",
+    "velocity",
+    "surface"
+   ],
+   "cut": "cut",
+   "day": "end"
+  },
+  {
+   "section": "sure",
+   "title": {
+    "en": "How sure are we?",
+    "uk": "Наскільки ми певні?"
+   },
+   "text": [
+    {
+     "en": "Only one GPS station checks the radar here: it measured −27.0 cm/yr, the radar −27.8. Denser blue hatching means a larger error.",
+     "uk": "Радар тут перевіряє лише одна GPS-станція: вона виміряла −27.0 см/рік, радар −27.8. Густіше синє штрихування — більша похибка."
+    },
+    {
+     "en": "The evening pass is twice as noisy (the afternoon air over the city is restless, often stormy), so this map uses the morning one. Strokes below 3σ are dashed; noise below 1σ is not drawn.",
+     "uk": "Вечірній прохід удвічі шумніший (по обіді повітря над містом неспокійне, часто з грозами), тому ця мапа з ранкового. Штрихи нижче 3σ пунктирні, шум нижче 1σ не малюється."
+    }
+   ],
+   "camera": {
+    "bbox": [
+     -99.3,
+     19.2,
+     -98.84,
+     19.57
+    ]
+   },
+   "layers": [
+    "terrain",
+    "velocity",
+    "grid",
+    "peaks"
+   ],
+   "modes": {
+    "grid": "sigma_cm_yr"
+   },
+   "day": "end",
+   "marks": [
+    {
+     "lon": -99.0684,
+     "lat": 19.4317,
+     "text": {
+      "en": "GPS station MMX1: −27.0 · radar: −27.8 cm/yr",
+      "uk": "GPS-станція MMX1: −27.0 · радар: −27.8 см/рік"
+     },
+     "dx": 40,
+     "dy": -34
+    }
+   ]
+  },
+  {
+   "section": "next",
+   "title": {
+    "en": "What else NISAR can tell here",
+    "uk": "Що ще NISAR може розповісти тут"
+   },
+   "text": [
+    {
+     "en": "A fresh map every 12 days could warn the metro and the water network where the bending speeds up.",
+     "uk": "Свіжа мапа кожні 12 днів могла б попереджати метро і водогін, де згин пришвидшується."
+    },
+    {
+     "en": "Both passes together split the motion into up-down and east-west.",
+     "uk": "Два проходи разом розкладають рух на вертикаль і схід–захід."
+    },
+    {
+     "en": "Its backscatter images (GCOV) follow water: near Xico a lake has been growing on the sunken plain. That is reported, not yet measured by us.",
+     "uk": "Його знімки яскравості (GCOV) стежать за водою: біля Шико на просілій рівнині росте озеро. Це відомо з літератури, ми ще не вимірювали."
+    }
+   ],
+   "camera": {
+    "bbox": [
+     -99.32,
+     19.17,
+     -98.82,
+     19.58
+    ]
+   },
+   "layers": [
+    "terrain",
+    "velocity",
+    "lake",
+    "water",
+    "canals",
+    "places",
+    "trees"
+   ],
+   "day": "end",
+   "marks": [
+    {
+     "lon": -98.945,
+     "lat": 19.275,
+     "text": {
+      "en": "Xico: a lake on sunken land",
+      "uk": "Шико: озеро на просілій землі"
+     },
+     "dx": -46,
+     "dy": 44
+    }
+   ]
+  }
+ ]
+}
