@@ -177,6 +177,19 @@
    "attribution": "© OpenStreetMap contributors"
   },
   {
+   "id": "roads",
+   "kind": "lines",
+   "file": "ctx_roads.geojson",
+   "style": "road",
+   "label": {
+    "en": "Main roads",
+    "uk": "Головні дороги"
+   },
+   "visible": true,
+   "z": 1.25,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
    "id": "trees",
    "kind": "lines",
    "file": "ctx_trees.geojson",
@@ -218,6 +231,7 @@
   "terrain",
   "trees",
   "built",
+  "roads",
   "water",
   "rivers",
   "places"
