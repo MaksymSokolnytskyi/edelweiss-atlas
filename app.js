@@ -47,7 +47,7 @@ const STR = {
         score_sound_t: "кожен дзвін — ще 2 см опускання: що швидше район сідає, то частіше дзвонить; нерухомі мовчать",
         lg_change: "радар втратив відбиток між двома прольотами (сніг, вода, обвал)", lg_change_event: "пляма, що лишається: селевий потік",
         story_intro: "таблиця", story_what: "що змінилось", story_why: "чому", story_sure: "наскільки певні",
-        story_next: "що ще може NISAR", story_listen: "послухати", story_back: "Назад", story_next_btn: "Далі", narrator: "🔈 Оповідач", narrator_on: "🔊 Оповідач: увімк.", questions: "Питання, які можуть виникнути", to_story: "До історії", 
+        story_next: "що ще може NISAR", story_listen: "послухати", story_back: "Назад", story_next_btn: "Далі", narrator: "🔈 Оповідач", narrator_on: "🔊 Оповідач: увімк.", narrator_note: "Текст оповіді написано за допомогою ШІ (Claude) й перевірено командою; голос — вбудований синтез мовлення вашого браузера", questions: "Питання, які можуть виникнути", to_story: "До історії", 
         story_explore: "досліджувати мапу самому ✕", story_open: "Читати таблицю ▸",
         contents: "☰ Зміст", glossary: "Слова, вжиті в атласі", next_plate: "Наступна таблиця", the_end: "Кінець атласу: до змісту" },
   en: { scene: "Place", theme: "Style", trust: "Trust", trust_fade: "weak strokes faded", trust_strong: "reliable only",
@@ -88,7 +88,7 @@ const STR = {
         score_sound_t: "each chime = 2 more cm of sinking: the faster a district sinks, the more often it chimes; still ground stays silent",
         lg_change: "the radar lost the ground's fingerprint between two passes (snow, water, a slide)", lg_change_event: "the patch that stays: the debris flow",
         story_intro: "plate", story_what: "what changed", story_why: "why", story_sure: "how sure",
-        story_next: "what else NISAR can do", story_listen: "listen", story_back: "Back", story_next_btn: "Next", narrator: "🔈 Narrator", narrator_on: "🔊 Narrator: on", questions: "Questions you may have", to_story: "To the story", 
+        story_next: "what else NISAR can do", story_listen: "listen", story_back: "Back", story_next_btn: "Next", narrator: "🔈 Narrator", narrator_on: "🔊 Narrator: on", narrator_note: "Narration text drafted with AI (Claude) and checked by the team; the voice is your browser's own speech synthesis", questions: "Questions you may have", to_story: "To the story", 
         story_explore: "explore the map yourself ✕", story_open: "Read the plate ▸",
         contents: "☰ Contents", glossary: "Words used in the atlas", next_plate: "Next plate", the_end: "End of the atlas: back to the contents" },
 };
@@ -481,9 +481,14 @@ function tintParcels(d, key, rgbaOf) {                 // nearest block, rounded
       if (i < 0 || j < 0 || i >= W || j >= H) continue;
       const k = col[j * W + i];
       if (!k) continue;
-      const r = (fu ** 4 + fv ** 4) ** 0.25, a = r < 0.4 ? 1 : Math.max(0, (0.5 - r) / 0.1);
-      if (a <= 0) continue;
-      const o = (py * cw + qx) * 4; px[o] = k[0]; px[o + 1] = k[1]; px[o + 2] = k[2]; px[o + 3] = k[3] * a;
+      const su = Math.sign(u - i) || 1, sv = Math.sign(v - j) || 1;
+      const same = (a, b) => { const c = a >= 0 && b >= 0 && a < W && b < H ? col[b * W + a] : null; return c && c[0] === k[0] && c[1] === k[1] && c[2] === k[2]; };
+      const eu = same(i + su, j) ? 0 : fu, ev = same(i, j + sv) ? 0 : fv;   // no edge towards a block of the same class
+      const r = eu || ev ? (eu ** 4 + ev ** 4) ** 0.25 : (same(i + su, j + sv) ? 0 : (fu ** 4 + fv ** 4) ** 0.25 * 0.0);
+      if (r > 0.5) continue;
+      const o = (py * cw + qx) * 4, edge = r > 0.43;
+      px[o] = edge ? k[0] * 0.45 : k[0]; px[o + 1] = edge ? k[1] * 0.45 : k[1]; px[o + 2] = edge ? k[2] * 0.45 : k[2];
+      px[o + 3] = edge ? 235 : k[3];
     }
   }
   ctx.putImageData(im, 0, 0);
@@ -683,7 +688,7 @@ function buildLayers() {
         const bn = kn !== tkey && fr > 0.03 ? draw(kn) : null;
         if (bn) L.push(new deck.BitmapLayer({ id: lay.id + "-" + m.key + "-t" + kn + "-in", image: bn.img, bounds: bn.bounds, opacity: op * fr,
           textureParameters: { [10240]: 9729, [10241]: 9729 } }));
-        if (m.categorical || !bm) L.push(new deck.PathLayer({ id: lay.id + "-" + m.key + "-h", data: hatchCells(d, m, color, th, tkey),   // classes: engraved over the wash
+        if ((m.categorical && how !== "parcels") || !bm) L.push(new deck.PathLayer({ id: lay.id + "-" + m.key + "-h", data: hatchCells(d, m, color, th, tkey),   // classes: engraved over the wash
           widthUnits: "pixels", capRounded: true, getPath: (h) => h.p, getColor: (h) => h.c, getWidth: (h) => h.w,
           updateTriggers: { getColor: [th.name, m.key, tkey] } }));
       } else if (how !== "dots") {
@@ -697,7 +702,7 @@ function buildLayers() {
         const amax = Math.max(1, ...pal.map((c) => c[3] ?? 255)), rMax = d.cell_km * 1000 / 2 * 0.96;
         L.push(new deck.ScatterplotLayer({ id: lay.id + "-" + m.key, data: d.cells, pickable: false, radiusUnits: "meters",
           getPosition: (c) => [c[0], c[1]],
-          getRadius: (c) => { const a = (color(c)[3] ?? 0) / amax; return a <= 0.05 ? 0 : rMax * Math.min(1, a); },
+          getRadius: (c) => { const a = (color(c)[3] ?? 0) / amax; return a <= 0.3 ? 0 : rMax * Math.min(1, a); },
           getFillColor: (c) => { const k = color(c), a = Math.min(1, (k[3] ?? 0) / amax);
             return [k[0], k[1], k[2], Math.round((th.cells_alpha ?? 220) * (0.45 + 0.55 * a))]; },
           updateTriggers: { getFillColor: [th.name, m.key, tkey], getRadius: [th.name, m.key, tkey] } }));
@@ -1629,6 +1634,7 @@ function goPlate(id) {
 
 function showCover(on) {
   if (on && !atlas.idx?.atlas) return;
+  if (on) { clearTimeout(state.narrTimer); if ("speechSynthesis" in window) speechSynthesis.cancel(); }
   if (on) renderCover();
   $("cover").classList.toggle("hidden", !on); glossTip(null); renderSheet();
   setParam("cover", on ? "1" : null);
@@ -1860,7 +1866,7 @@ function renderStoryCard() {
     (timed ? `<div class="st-time"><button id="st-play">${state.playing ? "❚❚" : "▶"}</button><span id="st-date"></span></div>` : "") + questions + onward +
     `<nav><button id="st-prev"${stepPage(i, -1) != null ? "" : " disabled"}>← ${T(p.appendix ? "to_story" : "story_back")}</button><span class="tabs">${tabs}</span>` +
     `<button id="st-next"${stepPage(i, 1) != null || onward ? "" : " disabled"}>${T("story_next_btn")} →</button></nav>` +
-    `<div class="st-foot"><a href="#" id="st-voice" class="${state.narrate ? "on" : ""}">${T(state.narrate ? "narrator_on" : "narrator")}</a>` +
+    `<div class="st-foot"><a href="#" id="st-voice" class="${state.narrate ? "on" : ""}" title="${T("narrator_note")}">${T(state.narrate ? "narrator_on" : "narrator")}</a>` +
     `<a href="#" id="st-explore">${T("story_explore")}</a></div>`;
   box.classList.remove("turn"); void box.offsetWidth; box.classList.add("turn");      // a short page-turn
   $("st-prev").onclick = () => applyPage(stepPage(i, -1));
@@ -1952,11 +1958,10 @@ function drawNotes() {             // engraved call-outs: a ring on the place, a
     const P = map.project([m.lon, m.lat]), dx = m.dx ?? 30, dy = m.dy ?? -24, x = P.x + dx, y = P.y + dy;
     const sign = m.curve ? curveSign(m.curve) : SIGNS[m.icon], gap = sign ? 34 : 4, end = dx < 0 ? "end" : "start", tx = x + (dx < 0 ? -gap : gap);
     // the place is ringed in ink: a ground radius (r_m) gives an ink loop around the area the page talks about
-    const mpp = 40075016.7 * Math.cos(m.lat * Math.PI / 180) / (512 * 2 ** map.getZoom()), rr = m.r_m ? Math.max(9, m.r_m / mpp) : 4.5;
-    s += `<circle cx="${P.x}" cy="${P.y}" r="${rr}" fill="none" stroke="${ink}" stroke-width="${m.r_m ? 1.6 : 1.3}"${m.r_m ? ' stroke-dasharray="7 3 1.5 3"' : ""}/>` +
+    const mpp = 40075016.7 * Math.cos(m.lat * Math.PI / 180) / (512 * 2 ** map.getZoom()), rr = 4.5;
+    s += `<circle cx="${P.x}" cy="${P.y}" r="${rr}" fill="none" stroke="${ink}" stroke-width="1.3"/>` +
          `<line x1="${P.x + (dx > 0 ? 1 : -1) * rr * 0.7}" y1="${P.y + (dy > 0 ? 1 : -1) * rr * 0.7}" x2="${x}" y2="${y}" stroke="${ink}" stroke-width="0.8"/>` +
          (sign ? `<g transform="translate(${x + (dx < 0 ? -17 : 17)},${y})"><circle r="16" fill="${paper}" fill-opacity=".85" stroke="${ink}" stroke-width=".7"/>` +
-                 (m.color ? `<circle r="15.3" fill="rgb(${m.color})" fill-opacity=".38"/>` : "") +
                  `<path d="${sign}" fill="none" stroke="${ink}" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" transform="scale(.95)"/></g>` : "") +
          `<text x="${tx}" y="${y + 4}" text-anchor="${end}" class="nt">${label(m.text)}</text>`;
   }
