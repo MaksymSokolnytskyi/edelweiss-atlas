@@ -463,6 +463,36 @@ function tintBitmap(d, key, valueOf, colorOf) {
   return out;
 }
 
+function tintParcels(d, key, rgbaOf) {                 // nearest block, rounded edges: a class reads as a field parcel
+  let byKey = _tintCache.get(d);
+  if (!byKey) { byKey = new Map(); _tintCache.set(d, byKey); }
+  if (byKey.has(key)) return byKey.get(key);
+  const g = hatchGrid(d);
+  if (!g.nx) return null;
+  const W = g.nx + 1, H = g.ny + 1, col = new Array(W * H).fill(null);
+  for (const [k, c] of g.at) { const [i, j] = k.split(",").map(Number), x = rgbaOf(c); if (x && x[3] > 0) col[j * W + i] = x; }
+  const up = Math.max(4, Math.min(16, Math.floor(900 / Math.max(W, H)))), cw = W * up, ch = H * up;
+  const cv = document.createElement("canvas"); cv.width = cw; cv.height = ch;
+  const ctx = cv.getContext("2d"), im = ctx.createImageData(cw, ch), px = im.data;
+  for (let py = 0; py < ch; py++) {
+    const v = H - 0.5 - (py + 0.5) / up, j = Math.round(v), fv = Math.abs(v - j);
+    for (let qx = 0; qx < cw; qx++) {
+      const u = (qx + 0.5) / up - 0.5, i = Math.round(u), fu = Math.abs(u - i);
+      if (i < 0 || j < 0 || i >= W || j >= H) continue;
+      const k = col[j * W + i];
+      if (!k) continue;
+      const r = (fu ** 4 + fv ** 4) ** 0.25, a = r < 0.4 ? 1 : Math.max(0, (0.5 - r) / 0.1);
+      if (a <= 0) continue;
+      const o = (py * cw + qx) * 4; px[o] = k[0]; px[o + 1] = k[1]; px[o + 2] = k[2]; px[o + 3] = k[3] * a;
+    }
+  }
+  ctx.putImageData(im, 0, 0);
+  const out = { img: cv, bounds: [g.x0 - 0.5 * g.dx, g.y0 - 0.5 * g.dy, g.x0 + (g.nx + 0.5) * g.dx, g.y0 + (g.ny + 0.5) * g.dy] };
+  if (byKey.size > 12) byKey.clear();
+  byKey.set(key, out);
+  return out;
+}
+
 function tintBitmapRGBA(d, key, rgbaOf) {             // rgbaOf(cell) -> [r, g, b, a]; channels blended bilinearly
   let byKey = _tintCache.get(d);
   if (!byKey) { byKey = new Map(); _tintCache.set(d, byKey); }
@@ -636,14 +666,15 @@ function buildLayers() {
       const color = m.categorical ? ((c) => (th.categorical[m.categorical] || [])[cellValue(d, m, c)] || [0, 0, 0, 0])
                                   : ((c) => ramp(th.ramps[m.ramp], cellValue(d, m, c)));
       const tkey = m.time ? seriesIndex(d) : 0;
-      if (th.cells_as === "squares") {
+      const how = (state.storyOn && state.storyData?.pages[state.page]?.cells_as) || th.cells_as;
+      if (how === "squares") {
         L.push(new deck.PolygonLayer({ id: lay.id + "-" + m.key, data: d.cells, stroked: false, pickable: false,
           getPolygon: (c) => { const k = half / Math.cos(c[1] * Math.PI / 180);
             return [[c[0] - k, c[1] - half], [c[0] + k, c[1] - half], [c[0] + k, c[1] + half], [c[0] - k, c[1] + half]]; },
           getFillColor: color, updateTriggers: { getFillColor: [th.name, m.key, tkey] } }));
-      } else if (th.cells_as === "tint") {
+      } else if (how === "tint" || how === "parcels") {
         const draw = (k) => m.categorical
-          ? tintBitmap(d, [th.name, m.key, k, "rgba"].join("|"), (c) => { const q = m.time ? (th.categorical[m.categorical] || [])[cellValue(d, m, c, k)] : color(c);
+          ? (how === "parcels" ? tintParcels : tintBitmap)(d, [th.name, m.key, k, "rgba"].join("|"), (c) => { const q = m.time ? (th.categorical[m.categorical] || [])[cellValue(d, m, c, k)] : color(c);
               return q ? (q[3] > 0 ? q : [q[0], q[1], q[2], 0]) : null; }, null)
           : tintBitmap(d, [th.name, m.key, k].join("|"), (c) => cellValue(d, m, c, k), (x) => ramp(th.ramps[m.ramp], x));
         const bm = draw(tkey), op = th.tint?.cells_opacity ?? 1, [, kn, fr] = m.time ? seriesBlend(d.dates) : [0, tkey, 0];
@@ -655,7 +686,7 @@ function buildLayers() {
         if (m.categorical || !bm) L.push(new deck.PathLayer({ id: lay.id + "-" + m.key + "-h", data: hatchCells(d, m, color, th, tkey),   // classes: engraved over the wash
           widthUnits: "pixels", capRounded: true, getPath: (h) => h.p, getColor: (h) => h.c, getWidth: (h) => h.w,
           updateTriggers: { getColor: [th.name, m.key, tkey] } }));
-      } else if (th.cells_as !== "dots") {
+      } else if (how !== "dots") {
         L.push(new deck.PathLayer({ id: lay.id + "-" + m.key + "-h", data: hatchCells(d, m, color, th, tkey),
           widthUnits: "pixels", capRounded: true, getPath: (h) => h.p, getColor: (h) => h.c, getWidth: (h) => h.w,
           updateTriggers: { getColor: [th.name, m.key, tkey] } }));
