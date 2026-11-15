@@ -177,3 +177,5 @@ body[data-theme="scroll"] #story h2 { font-size: 27px; }
   #cover .cv-wgrid { columns: 1; }
   #cover footer { flex-direction: column; align-items: flex-start; }
 }
+#story nav button { white-space: nowrap; }
+#story nav .tabs { flex-wrap: wrap; justify-content: center; }
