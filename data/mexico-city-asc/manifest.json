@@ -1,0 +1,429 @@
+{
+ "engine_version": 1,
+ "id": "mexico-city-asc",
+ "title": {
+  "en": "Mexico City",
+  "uk": "Мехіко"
+ },
+ "subtitle": "NISAR L-band GUNW, ascending (morning) pass",
+ "bbox": [
+  -99.32,
+  19.17,
+  -98.82,
+  19.58
+ ],
+ "center": [
+  -99.07,
+  19.375
+ ],
+ "dates": [
+  "2025-10-30",
+  "2025-11-11",
+  "2025-11-23",
+  "2025-12-05",
+  "2025-12-17",
+  "2025-12-29",
+  "2026-01-10",
+  "2026-01-22",
+  "2026-02-03",
+  "2026-02-15",
+  "2026-02-27",
+  "2026-03-11",
+  "2026-03-23",
+  "2026-04-04",
+  "2026-04-16",
+  "2026-04-28",
+  "2026-05-10",
+  "2026-05-22",
+  "2026-06-03",
+  "2026-06-15",
+  "2026-06-27",
+  "2026-07-09",
+  "2026-07-21",
+  "2026-08-14",
+  "2026-08-26",
+  "2026-09-07",
+  "2026-09-19",
+  "2026-10-01",
+  "2026-10-13"
+ ],
+ "n_pairs": 28,
+ "direction": "ASCENDING",
+ "reference": {
+  "bbox": [
+   -99.14,
+   19.53,
+   -99.09,
+   19.57
+  ],
+  "label": "Sierra de Guadalupe (rock)"
+ },
+ "anchor": {
+  "type": "radar-only",
+  "gnss": [
+   {
+    "station": "MMX1",
+    "lon": -99.0684,
+    "lat": 19.4317,
+    "rate_cm_yr": -27.0,
+    "note": "airport; GNSS vertical rate over the asc chain window",
+    "series": "data/raw/gnss/MMX1.tenv3",
+    "nisar_cm_yr": -27.84,
+    "diff_cm_yr": -0.84
+   }
+  ]
+ },
+ "trust": {
+  "snr_strong": 3.0,
+  "snr_weak": 1.0,
+  "segments": true
+ },
+ "stats": {
+  "velocity": {
+   "strokes": 10098,
+   "trust": {
+    "strong": 6741,
+    "weak": 3212,
+    "below": 145
+   },
+   "deepest_cm": -29.0,
+   "band_cm": 2.0,
+   "headline": {
+    "rate_cm_yr": -32.1,
+    "sigma_cm_yr": 2.5,
+    "at_least_cm_yr": -27.0,
+    "lon": -99.0442,
+    "lat": 19.4567,
+    "cum_cm": -30.8,
+    "block_m": 500.0,
+    "p1_cm_yr": -31.6,
+    "rule": "~1.5 km neighbourhood (3x3 well-covered 500 m blocks) with the most negative rate + 2 sigma; single pass, LOS taken as vertical"
+   }
+  },
+  "tropo": {
+   "h0_m": 2401.4,
+   "rate_cm_yr_per_100m": -0.514,
+   "stable_above_m": 2400
+  }
+ },
+ "layers": [
+  {
+   "id": "terrain",
+   "kind": "hachures-static",
+   "file": "terrain.geojson",
+   "label": {
+    "en": "Relief",
+    "uk": "Рельєф"
+   },
+   "props": [
+    "dark"
+   ]
+  },
+  {
+   "id": "velocity",
+   "kind": "hachures-time",
+   "file": "velocity.geojson",
+   "label": {
+    "en": "Ground motion",
+    "uk": "Рух ґрунту"
+   },
+   "props": [
+    "rate_cm_yr",
+    "sigma_cm_yr",
+    "snr",
+    "segments",
+    "trust",
+    "dark",
+    "sense",
+    "t"
+   ]
+  },
+  {
+   "id": "contours",
+   "kind": "contours",
+   "file": "contours.geojson",
+   "label": {
+    "en": "Depth lines",
+    "uk": "Лінії глибини"
+   },
+   "props": [
+    "level_cm",
+    "major",
+    "d"
+   ],
+   "unit": "cm",
+   "step_cm": 5
+  },
+  {
+   "id": "surface",
+   "kind": "surface",
+   "file": "surface.json",
+   "label": {
+    "en": "Cross-section",
+    "uk": "Розріз"
+   },
+   "visible": false
+  },
+  {
+   "id": "grid",
+   "kind": "cells",
+   "file": "grid.json",
+   "label": {
+    "en": "Trust cells",
+    "uk": "Клітинки довіри"
+   },
+   "props": [
+    "lon",
+    "lat",
+    "rate_cm_yr",
+    "sigma_cm_yr",
+    "segments",
+    "cum_cm"
+   ]
+  },
+  {
+   "id": "rhythm",
+   "kind": "rhythm",
+   "file": "rhythm.json",
+   "label": {
+    "en": "Score of the districts",
+    "uk": "Партитура районів"
+   },
+   "visible": true
+  },
+  {
+   "id": "lake",
+   "kind": "lines",
+   "file": "ctx_lake.geojson",
+   "style": "water_ghost",
+   "label": {
+    "en": "Old lakes (lakebed clay)",
+    "uk": "Старі озера (глина дна)"
+   },
+   "visible": true,
+   "z": 1.2,
+   "note": {
+    "en": "Zone III 'Lacustre' of the CDMX geotechnical zoning (Atlas de Riesgos CDMX).",
+    "uk": "Зона III «Lacustre» геотехнічного районування CDMX (Атлас ризиків CDMX)."
+   }
+  },
+  {
+   "id": "cracks",
+   "kind": "lines",
+   "file": "ctx_cracks.geojson",
+   "style": "crack",
+   "label": {
+    "en": "Mapped ground cracks (CDMX atlas)",
+    "uk": "Нанесені тріщини (атлас CDMX)"
+   },
+   "visible": false,
+   "z": 3.4,
+   "note": {
+    "en": "Where field teams mapped cracks; our test found no link to uneven sinking.",
+    "uk": "Там, де польові команди нанесли тріщини; наш тест не знайшов зв'язку з нерівним просіданням."
+   }
+  },
+  {
+   "id": "water",
+   "kind": "lines",
+   "file": "ctx_water.geojson",
+   "style": "water",
+   "label": {
+    "en": "Water",
+    "uk": "Вода"
+   },
+   "visible": false,
+   "z": 1.3,
+   "group": "city",
+   "group_label": {
+    "en": "City (OpenStreetMap)",
+    "uk": "Місто (OpenStreetMap)"
+   },
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "canals",
+   "kind": "lines",
+   "file": "ctx_canals.geojson",
+   "style": "canal",
+   "label": {
+    "en": "Canals",
+    "uk": "Канали"
+   },
+   "visible": false,
+   "z": 3.5,
+   "group": "city",
+   "group_label": {
+    "en": "City (OpenStreetMap)",
+    "uk": "Місто (OpenStreetMap)"
+   },
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "rail",
+   "kind": "lines",
+   "file": "ctx_rail.geojson",
+   "style": "rail",
+   "label": {
+    "en": "Railways",
+    "uk": "Залізниця"
+   },
+   "visible": false,
+   "z": 3.5,
+   "group": "city",
+   "group_label": {
+    "en": "City (OpenStreetMap)",
+    "uk": "Місто (OpenStreetMap)"
+   },
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "metro",
+   "kind": "lines",
+   "file": "ctx_metro.geojson",
+   "style": "metro",
+   "label": {
+    "en": "Metro",
+    "uk": "Метро"
+   },
+   "visible": false,
+   "z": 3.5,
+   "group": "city",
+   "group_label": {
+    "en": "City (OpenStreetMap)",
+    "uk": "Місто (OpenStreetMap)"
+   },
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "stations",
+   "kind": "lines",
+   "file": "ctx_stations.geojson",
+   "style": "station",
+   "label": {
+    "en": "Stations",
+    "uk": "Станції"
+   },
+   "visible": false,
+   "z": 3.55,
+   "group": "city",
+   "group_label": {
+    "en": "City (OpenStreetMap)",
+    "uk": "Місто (OpenStreetMap)"
+   },
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "runways",
+   "kind": "lines",
+   "file": "ctx_runways.geojson",
+   "style": "runway",
+   "label": {
+    "en": "Runways",
+    "uk": "Злітні смуги"
+   },
+   "visible": false,
+   "z": 3.5,
+   "group": "city",
+   "group_label": {
+    "en": "City (OpenStreetMap)",
+    "uk": "Місто (OpenStreetMap)"
+   },
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "places",
+   "kind": "lines",
+   "file": "ctx_places.geojson",
+   "style": "place",
+   "label": {
+    "en": "Places",
+    "uk": "Назви"
+   },
+   "visible": false,
+   "z": 3.6,
+   "group": "city",
+   "group_label": {
+    "en": "City (OpenStreetMap)",
+    "uk": "Місто (OpenStreetMap)"
+   },
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "elevation",
+   "kind": "elevation",
+   "file": "elev.json",
+   "label": {
+    "en": "Height",
+    "uk": "Висота"
+   }
+  },
+  {
+   "id": "peaks",
+   "kind": "lines",
+   "file": "ctx_peaks.geojson",
+   "style": "peak",
+   "label": {
+    "en": "Summits, m above sea level",
+    "uk": "Вершини, м над рівнем моря"
+   },
+   "visible": true,
+   "z": 3.6
+  },
+  {
+   "id": "trees",
+   "kind": "lines",
+   "file": "ctx_trees.geojson",
+   "style": "tree",
+   "label": {
+    "en": "Woods and parks",
+    "uk": "Ліси й парки"
+   },
+   "visible": false,
+   "by_theme": true,
+   "z": 1.25,
+   "attribution": "© ESA WorldCover 2021 (CC-BY 4.0)"
+  },
+  {
+   "id": "built",
+   "kind": "lines",
+   "file": "ctx_built.geojson",
+   "style": "built",
+   "label": {
+    "en": "Built-up land",
+    "uk": "Забудова"
+   },
+   "visible": false,
+   "by_theme": true,
+   "z": 1.1,
+   "attribution": "© ESA WorldCover 2021 (CC-BY 4.0)"
+  },
+  {
+   "id": "blocks",
+   "kind": "image",
+   "file": "ctx_blocks.png",
+   "bounds": [
+    -99.32,
+    19.169999999999998,
+    -98.82,
+    19.58
+   ],
+   "style": "blocks",
+   "label": {
+    "en": "Blocks and streets",
+    "uk": "Квартали й вулиці"
+   },
+   "visible": false,
+   "by_theme": true,
+   "z": 1.1,
+   "attribution": "© ESA WorldCover 2021 (CC-BY 4.0) · © OpenStreetMap contributors",
+   "note": {
+    "en": "Built-up land (ESA WorldCover, 2021) with the streets (OpenStreetMap) left white, drawn like an old town plan; darker = denser.",
+    "uk": "Забудова (ESA WorldCover, 2021), а вулиці (OpenStreetMap) лишені білими, як на старому плані міста; темніше = щільніше."
+   }
+  }
+ ],
+ "notes": [],
+ "generated": "2026-11-11T20:05:04",
+ "story": "story.json"
+}

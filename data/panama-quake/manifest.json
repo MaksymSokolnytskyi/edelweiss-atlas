@@ -1,0 +1,140 @@
+{
+ "engine_version": 1,
+ "id": "panama-quake",
+ "title": "Panama M7.7 earthquake",
+ "subtitle": "2026-10-09 · fault estimate from two NISAR passes, with a confidence flag",
+ "bbox": [
+  -81.35,
+  6.61,
+  -79.75,
+  8.37
+ ],
+ "center": [
+  -80.55,
+  7.49
+ ],
+ "dates": [],
+ "n_pairs": 0,
+ "direction": "ASCENDING+DESCENDING",
+ "reference": {
+  "bbox": null,
+  "label": ""
+ },
+ "anchor": {
+  "type": "radar-only",
+  "gnss": []
+ },
+ "trust": {
+  "snr_strong": 3.0,
+  "snr_weak": 1.0,
+  "segments": true
+ },
+ "stats": {},
+ "layers": [
+  {
+   "id": "terrain",
+   "kind": "hachures-static",
+   "file": "terrain.geojson",
+   "label": {
+    "en": "Relief",
+    "uk": "Рельєф"
+   },
+   "props": [
+    "dark"
+   ]
+  },
+  {
+   "id": "los_asc",
+   "kind": "cells",
+   "file": "los_asc.json",
+   "label": {
+    "en": "Radar LOS, morning pass",
+    "uk": "Радар, ранковий прохід"
+   },
+   "props": [
+    "lon",
+    "lat",
+    "los_cm",
+    "model_cm",
+    "residual_cm"
+   ],
+   "visible": true
+  },
+  {
+   "id": "los_desc",
+   "kind": "cells",
+   "file": "los_desc.json",
+   "label": {
+    "en": "Radar LOS, evening pass",
+    "uk": "Радар, вечірній прохід"
+   },
+   "props": [
+    "lon",
+    "lat",
+    "los_cm",
+    "model_cm",
+    "residual_cm"
+   ],
+   "visible": false
+  },
+  {
+   "id": "fault",
+   "kind": "polygons",
+   "file": "fault.geojson",
+   "style": "fault",
+   "label": {
+    "en": "Fault estimate",
+    "uk": "Оцінка розлому"
+   },
+   "props": [
+    "part",
+    "strike",
+    "dip"
+   ]
+  },
+  {
+   "id": "card",
+   "kind": "card",
+   "file": "card.json",
+   "label": {
+    "en": "Quake card",
+    "uk": "Картка землетрусу"
+   }
+  },
+  {
+   "id": "coast",
+   "kind": "lines",
+   "file": "ctx_coast.geojson",
+   "style": "coast",
+   "label": {
+    "en": "Coast",
+    "uk": "Узбережжя"
+   },
+   "visible": true,
+   "z": 1.3,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "places",
+   "kind": "lines",
+   "file": "ctx_places.geojson",
+   "style": "place",
+   "label": {
+    "en": "Towns",
+    "uk": "Міста"
+   },
+   "visible": true,
+   "z": 3.6,
+   "attribution": "© OpenStreetMap contributors"
+  }
+ ],
+ "notes": [
+  "Env for the network: SBI_BLOCK=24 SBI_LMAX=200e3 SBI_XYMAX=60e3 HYB_XYMAX=80e3 HYB_LMAX=300e3"
+ ],
+ "generated": "2026-11-11T12:55:43",
+ "frame_sub": {
+  "en": "the earthquake of 9 October 2026 seen by the NISAR radar",
+  "uk": "землетрус 9 жовтня 2026 року очима радара NISAR"
+ },
+ "story": "story.json"
+}

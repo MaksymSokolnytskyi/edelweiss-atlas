@@ -1,0 +1,231 @@
+{
+ "engine_version": 1,
+ "id": "langtang-asc",
+ "title": {
+  "en": "Langtang valley, Nepal",
+  "uk": "Долина Лангтанг, Непал"
+ },
+ "subtitle": "Debris-flow footprint: where the radar lost the ground's fingerprint",
+ "frame_sub": {
+  "en": "a mountainside that fell, seen by the NISAR radar · {a}–{b}",
+  "uk": "схил, що впав, очима радара NISAR · {a}–{b}"
+ },
+ "bbox": [
+  85.37,
+  28.17,
+  85.67,
+  28.47
+ ],
+ "center": [
+  85.52000000000001,
+  28.32
+ ],
+ "dates": [
+  "2025-11-28",
+  "2025-12-10",
+  "2025-12-22",
+  "2026-01-03",
+  "2026-01-15",
+  "2026-01-27",
+  "2026-02-08",
+  "2026-02-20",
+  "2026-03-04",
+  "2026-03-16",
+  "2026-03-28",
+  "2026-04-09",
+  "2026-04-21",
+  "2026-05-03",
+  "2026-05-15",
+  "2026-05-27",
+  "2026-06-08",
+  "2026-06-20",
+  "2026-07-02",
+  "2026-07-14",
+  "2026-07-26",
+  "2026-08-19",
+  "2026-08-31",
+  "2026-09-12",
+  "2026-09-24",
+  "2026-10-06"
+ ],
+ "n_pairs": 25,
+ "direction": "ASCENDING",
+ "reference": {
+  "bbox": null,
+  "label": ""
+ },
+ "anchor": {
+  "type": "radar-only",
+  "gnss": []
+ },
+ "trust": {
+  "snr_strong": 3.0,
+  "snr_weak": 1.0,
+  "segments": true
+ },
+ "stats": {
+  "footprint": {
+   "polygons": 6,
+   "largest_km2": 4.84,
+   "event_date": "2026-08-26",
+   "false_alarm_check": [
+    {
+     "pair": "2026-07-26 → 2026-08-19",
+     "largest_km2": 0.115
+    },
+    {
+     "pair": "2026-07-14 → 2026-07-26",
+     "largest_km2": 0.0
+    }
+   ]
+  }
+ },
+ "layers": [
+  {
+   "id": "terrain",
+   "kind": "hachures-static",
+   "file": "terrain.geojson",
+   "label": {
+    "en": "Relief",
+    "uk": "Рельєф"
+   },
+   "props": [
+    "dark"
+   ]
+  },
+  {
+   "id": "footprint",
+   "kind": "polygons",
+   "file": "footprint.geojson",
+   "style": "change",
+   "label": {
+    "en": "Change footprint",
+    "uk": "Слід змін"
+   },
+   "props": [
+    "area_km2",
+    "pair"
+   ]
+  },
+  {
+   "id": "changes",
+   "kind": "polygons",
+   "file": "changes.geojson",
+   "style": "change_pair",
+   "z": 2.1,
+   "label": {
+    "en": "Lost radar fingerprint, pair by pair",
+    "uk": "Втрачений відбиток, пара за парою"
+   },
+   "props": [
+    "d",
+    "area_km2",
+    "pair",
+    "event"
+   ],
+   "time": "d"
+  },
+  {
+   "id": "change_strip",
+   "kind": "rhythm",
+   "file": "change_strip.json",
+   "label": {
+    "en": "Change through the year",
+    "uk": "Зміни протягом року"
+   },
+   "visible": false
+  },
+  {
+   "id": "glaciers",
+   "kind": "lines",
+   "file": "ctx_glaciers.geojson",
+   "style": "glacier",
+   "label": {
+    "en": "Glaciers",
+    "uk": "Льодовики"
+   },
+   "visible": true,
+   "z": 1.15,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "lakes",
+   "kind": "lines",
+   "file": "ctx_lakes.geojson",
+   "style": "water",
+   "label": {
+    "en": "Lakes",
+    "uk": "Озера"
+   },
+   "visible": true,
+   "z": 1.2,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "rivers",
+   "kind": "lines",
+   "file": "ctx_rivers.geojson",
+   "style": "river",
+   "label": {
+    "en": "Rivers and streams",
+    "uk": "Річки й потоки"
+   },
+   "visible": true,
+   "z": 1.25,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "paths",
+   "kind": "lines",
+   "file": "ctx_paths.geojson",
+   "style": "path",
+   "label": {
+    "en": "Trails",
+    "uk": "Стежки"
+   },
+   "visible": false,
+   "z": 1.3,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "villages",
+   "kind": "lines",
+   "file": "ctx_villages.geojson",
+   "style": "place",
+   "label": {
+    "en": "Villages",
+    "uk": "Селища"
+   },
+   "visible": true,
+   "z": 3.6,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "summits",
+   "kind": "lines",
+   "file": "ctx_summits.geojson",
+   "style": "peak",
+   "label": {
+    "en": "Summits, m above sea level",
+    "uk": "Вершини, м над рівнем моря"
+   },
+   "visible": true,
+   "z": 3.6,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "elevation",
+   "kind": "elevation",
+   "file": "elev.json",
+   "label": {
+    "en": "Height",
+    "uk": "Висота"
+   }
+  }
+ ],
+ "notes": [
+  "Footprint rule (co / adjacent-pre coherence < 0.35 where pre > 0.4) was found post-hoc on this event (L-dpm); not yet validated blind."
+ ],
+ "generated": "2026-11-11T20:59:16",
+ "story": "story.json"
+}

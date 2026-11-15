@@ -1,0 +1,53 @@
+{
+ "kind": "card",
+ "event": "Panama M7.7",
+ "date": "2026-10-09",
+ "estimate": {
+  "strike": 285,
+  "dip": 48,
+  "rake": 42,
+  "Mw": 7.44,
+  "length_km": 135.5,
+  "width_km": 24.7,
+  "slip_m": 1.78,
+  "centroid_depth_km": 11.5
+ },
+ "confidence": 0.19,
+ "threshold": 0.75,
+ "confident": false,
+ "spread": {
+  "runs": 12,
+  "runs_agreeing": 5,
+  "strike": [
+   100,
+   295
+  ],
+  "dip": [
+   16,
+   77
+  ],
+  "Mw": [
+   7.37,
+   7.55
+  ],
+  "confidence": [
+   0.06,
+   0.31
+  ]
+ },
+ "relative_residual": 0.69,
+ "method": "Q-2look v1: neural proposals on the morning pass + exact slip solve on both passes; confidence = top-16 agreement (15 deg strike & dip), median over seeds; shown run = lowest residual of the seeds",
+ "provenance": "Blind test D-3 was pre-registered before data; this map re-runs the frozen recipe (unblinded now).",
+ "reference": {
+  "source": "USGS W-phase",
+  "Mw": 7.7,
+  "plane": [
+   288.32,
+   66.22,
+   -16.68
+  ],
+  "d_strike": 3,
+  "d_dip": 18,
+  "note": "comparison only; not used by the estimate"
+ }
+}

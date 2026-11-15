@@ -1,0 +1,153 @@
+{
+ "engine_version": 1,
+ "id": "central-valley-asc",
+ "title": "Central Valley, California",
+ "subtitle": "Rhythm of the fields: radar coherence through the farming year",
+ "bbox": [
+  -120.2,
+  35.8,
+  -119.0,
+  36.5
+ ],
+ "center": [
+  -119.6,
+  36.15
+ ],
+ "dates": [
+  "2025-11-30",
+  "2025-12-12",
+  "2025-12-24",
+  "2026-01-05",
+  "2026-01-17",
+  "2026-01-29",
+  "2026-02-10",
+  "2026-02-22",
+  "2026-03-06",
+  "2026-03-18",
+  "2026-03-30",
+  "2026-04-11",
+  "2026-04-23",
+  "2026-05-05",
+  "2026-05-17",
+  "2026-05-29",
+  "2026-06-10",
+  "2026-06-22",
+  "2026-07-04",
+  "2026-07-16",
+  "2026-08-03",
+  "2026-08-21",
+  "2026-09-02",
+  "2026-09-14",
+  "2026-10-02"
+ ],
+ "n_pairs": 25,
+ "direction": "ASCENDING",
+ "reference": {
+  "bbox": [
+   -119.1,
+   36.33,
+   -119.02,
+   36.43
+  ],
+  "label": "built-up blocks (coherence normaliser)"
+ },
+ "anchor": {
+  "type": "radar-only",
+  "gnss": []
+ },
+ "trust": {
+  "snr_strong": 3.0,
+  "snr_weak": 1.0,
+  "segments": true
+ },
+ "stats": {
+  "fields": {
+   "cells": 820,
+   "clusters": [
+    292,
+    285,
+    148,
+    95
+   ]
+  }
+ },
+ "layers": [
+  {
+   "id": "fields",
+   "kind": "cells",
+   "file": "fields.json",
+   "label": {
+    "en": "Rhythm of the fields",
+    "uk": "Ритм полів"
+   },
+   "props": [
+    "lon",
+    "lat",
+    "cluster",
+    "mean_rel_coh",
+    "rel_coh"
+   ]
+  },
+  {
+   "id": "water",
+   "kind": "lines",
+   "file": "ctx_water.geojson",
+   "style": "water",
+   "label": {
+    "en": "Lakes and reservoirs",
+    "uk": "Озера й водосховища"
+   },
+   "visible": true,
+   "z": 1.2,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "rivers",
+   "kind": "lines",
+   "file": "ctx_rivers.geojson",
+   "style": "river",
+   "label": {
+    "en": "Rivers",
+    "uk": "Річки"
+   },
+   "visible": true,
+   "z": 1.25,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "canals",
+   "kind": "lines",
+   "file": "ctx_canals.geojson",
+   "style": "canal",
+   "label": {
+    "en": "Canals",
+    "uk": "Канали"
+   },
+   "visible": true,
+   "z": 1.3,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "places",
+   "kind": "lines",
+   "file": "ctx_places.geojson",
+   "style": "place",
+   "label": {
+    "en": "Towns",
+    "uk": "Міста"
+   },
+   "visible": true,
+   "z": 3.6,
+   "attribution": "© OpenStreetMap contributors"
+  }
+ ],
+ "notes": [
+  "Post-hoc exploratory clustering (X-coh, night 10-11.11); pre-registered X1-X3 results in notes/experiments.md."
+ ],
+ "generated": "2026-11-11T13:00:42",
+ "frame_sub": {
+  "en": "the farming year heard by the NISAR radar · {a}–{b}",
+  "uk": "рік на полях, почутий радаром NISAR · {a}–{b}"
+ },
+ "story": "story.json"
+}

@@ -1,0 +1,681 @@
+{
+ "name": "scroll",
+ "label": "Scroll (parchment)",
+ "paper": "#e8dcbf",
+ "ink": "#3a2a1c",
+ "muted": "#6a5540",
+ "font": "'IM Fell English', Georgia, serif",
+ "basemap": null,
+ "terrain": {
+  "color": [
+   96,
+   74,
+   50
+  ],
+  "alpha": 200,
+  "w_min": 0.2,
+  "w_max": 1.35
+ },
+ "velocity": {
+  "color": [
+   140,
+   46,
+   30
+  ],
+  "w_min": 0.5,
+  "w_max": 2.2,
+  "alpha": {
+   "strong": 255,
+   "weak": 90,
+   "below": 0,
+   "weak_dashed": 220
+  },
+  "color_up": [
+   52,
+   84,
+   110
+  ]
+ },
+ "ramps": {
+  "sigma": [
+   [
+    0,
+    [
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   [
+    2,
+    [
+     40,
+     70,
+     140,
+     40
+    ]
+   ],
+   [
+    5,
+    [
+     40,
+     70,
+     140,
+     100
+    ]
+   ],
+   [
+    10,
+    [
+     30,
+     50,
+     120,
+     160
+    ]
+   ]
+  ],
+  "segments": [
+   [
+    1,
+    [
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   [
+    2,
+    [
+     150,
+     90,
+     30,
+     50
+    ]
+   ],
+   [
+    4,
+    [
+     150,
+     90,
+     30,
+     110
+    ]
+   ],
+   [
+    8,
+    [
+     120,
+     60,
+     20,
+     170
+    ]
+   ]
+  ],
+  "coherence": [
+   [
+    0.2,
+    [
+     168,
+     50,
+     42,
+     200
+    ]
+   ],
+   [
+    0.55,
+    [
+     214,
+     170,
+     110,
+     150
+    ]
+   ],
+   [
+    0.85,
+    [
+     243,
+     238,
+     223,
+     40
+    ]
+   ],
+   [
+    1.15,
+    [
+     70,
+     100,
+     80,
+     170
+    ]
+   ]
+  ],
+  "los": [
+   [
+    -40,
+    [
+     40,
+     70,
+     140,
+     200
+    ]
+   ],
+   [
+    -5,
+    [
+     40,
+     70,
+     140,
+     40
+    ]
+   ],
+   [
+    0,
+    [
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   [
+    5,
+    [
+     168,
+     50,
+     42,
+     40
+    ]
+   ],
+   [
+    40,
+    [
+     168,
+     50,
+     42,
+     200
+    ]
+   ]
+  ],
+  "anom_db": [
+   [
+    -6,
+    [
+     168,
+     50,
+     42,
+     190
+    ]
+   ],
+   [
+    -1.5,
+    [
+     168,
+     50,
+     42,
+     70
+    ]
+   ],
+   [
+    0,
+    [
+     168,
+     50,
+     42,
+     0
+    ]
+   ],
+   [
+    1.5,
+    [
+     60,
+     90,
+     140,
+     70
+    ]
+   ],
+   [
+    6,
+    [
+     60,
+     90,
+     140,
+     190
+    ]
+   ]
+  ]
+ },
+ "categorical": {
+  "dance": [
+   [
+    168,
+    50,
+    42,
+    150
+   ],
+   [
+    60,
+    90,
+    140,
+    150
+   ],
+   [
+    190,
+    150,
+    60,
+    160
+   ],
+   [
+    90,
+    130,
+    80,
+    160
+   ]
+  ],
+  "wis_class": [
+   [
+    110,
+    98,
+    82,
+    18
+   ],
+   [
+    190,
+    150,
+    60,
+    150
+   ],
+   [
+    168,
+    50,
+    42,
+    170
+   ],
+   [
+    214,
+    170,
+    110,
+    170
+   ],
+   [
+    90,
+    130,
+    80,
+    170
+   ],
+   [
+    60,
+    110,
+    100,
+    170
+   ],
+   [
+    60,
+    90,
+    140,
+    170
+   ]
+  ],
+  "harvest": [
+   [
+    90,
+    130,
+    80,
+    150
+   ],
+   [
+    190,
+    150,
+    60,
+    200
+   ]
+  ]
+ },
+ "polygons": {
+  "change": {
+   "fill": [
+    140,
+    46,
+    30,
+    80
+   ],
+   "line": [
+    110,
+    36,
+    24,
+    255
+   ],
+   "width": 1.5
+  },
+  "fault": {
+   "fill": [
+    27,
+    26,
+    23,
+    30
+   ],
+   "line": [
+    27,
+    26,
+    23,
+    255
+   ],
+   "width": 1.2,
+   "edge_width": 3.5,
+   "point": [
+    168,
+    50,
+    42,
+    255
+   ]
+  },
+  "change_pair": {
+   "erase": [
+    232,
+    220,
+    191,
+    180
+   ],
+   "dot": [
+    110,
+    98,
+    82,
+    210
+   ],
+   "line": [
+    110,
+    98,
+    82,
+    150
+   ],
+   "width": 0.6,
+   "dot_event": [
+    140,
+    46,
+    30,
+    235
+   ],
+   "line_event": [
+    110,
+    36,
+    24,
+    255
+   ],
+   "width_event": 1.4,
+   "spacing_m": 45,
+   "dot_m": 7
+  }
+ },
+ "panel": {
+  "bg": "rgba(236,226,201,0.95)",
+  "border": "#7b6650"
+ },
+ "paper_rgb": [
+  232,
+  220,
+  191
+ ],
+ "contours": {
+  "color": [
+   58,
+   42,
+   28
+  ],
+  "alpha": 140,
+  "w": 0.5,
+  "w_major": 1.0,
+  "label_size": 13
+ },
+ "lines": {
+  "water_ghost": {
+   "color": [
+    64,
+    96,
+    100
+   ],
+   "alpha": 170,
+   "width": 0.9,
+   "fade": true
+  },
+  "water": {
+   "color": [
+    64,
+    96,
+    100
+   ],
+   "alpha": 210,
+   "width": 0.9,
+   "legend": true
+  },
+  "canal": {
+   "color": [
+    64,
+    96,
+    100
+   ],
+   "alpha": 230,
+   "width": 1.3,
+   "label_size": 11,
+   "label_color": [
+    64,
+    96,
+    100
+   ],
+   "italic": true,
+   "spaced": true
+  },
+  "crack": {
+   "color": [
+    58,
+    42,
+    28
+   ],
+   "alpha": 200,
+   "width": 0.8
+  },
+  "rail": {
+   "color": [
+    58,
+    42,
+    28
+   ],
+   "alpha": 210,
+   "width": 2.6,
+   "zebra": [
+    4,
+    4
+   ],
+   "casing": 0.8
+  },
+  "metro": {
+   "color": [
+    58,
+    42,
+    28
+   ],
+   "alpha": 255,
+   "width": 4.2,
+   "zebra": [
+    5,
+    5
+   ],
+   "casing": 1.2,
+   "label_size": 12
+  },
+  "runway": {
+   "color": [
+    58,
+    42,
+    28
+   ],
+   "alpha": 235,
+   "width": 4.0,
+   "casing": 1.0
+  },
+  "place": {
+   "color": [
+    74,
+    54,
+    36
+   ],
+   "alpha": 0,
+   "width": 0,
+   "label_size": 13,
+   "label_bold": false,
+   "legend": false,
+   "italic": true,
+   "spaced": true,
+   "caps_rank": 3,
+   "caps_size": 14,
+   "collide": true
+  },
+  "station": {
+   "color": [
+    58,
+    42,
+    28
+   ],
+   "alpha": 255,
+   "width": 0,
+   "dot": 2.6,
+   "legend_dot": true
+  },
+  "peak": {
+   "color": [
+    74,
+    54,
+    36
+   ],
+   "alpha": 0,
+   "width": 0,
+   "label_size": 11,
+   "legend": false
+  },
+  "tree": {
+   "color": [
+    74,
+    76,
+    44
+   ],
+   "alpha": 170,
+   "width": 0,
+   "size": 9,
+   "airy": 1.8
+  },
+  "built": {
+   "color": [
+    58,
+    42,
+    28
+   ],
+   "alpha": 85,
+   "width": 0.6,
+   "hatch": true
+  },
+  "blocks": {
+   "color": [
+    58,
+    42,
+    28
+   ],
+   "alpha": 48,
+   "blocks": true,
+   "zoom_fade": [
+    10,
+    12.5,
+    0.45
+   ]
+  },
+  "glacier": {
+   "color": [
+    78,
+    112,
+    132
+   ],
+   "alpha": 150,
+   "width": 0.55,
+   "fade": true
+  },
+  "river": {
+   "color": [
+    64,
+    96,
+    100
+   ],
+   "alpha": 220,
+   "width": 1.0,
+   "legend": true,
+   "italic": true,
+   "label_size": 11
+  },
+  "path": {
+   "color": [
+    74,
+    54,
+    36
+   ],
+   "alpha": 150,
+   "width": 0.6,
+   "dash": [
+    3,
+    2
+   ]
+  },
+  "bowl": {
+   "color": [
+    52,
+    38,
+    26
+   ],
+   "alpha": 240,
+   "width": 1.6,
+   "dash": [
+    6,
+    3
+   ],
+   "label_size": 11,
+   "legend": true
+  },
+  "bowl_candidate": {
+   "color": [
+    52,
+    38,
+    26
+   ],
+   "alpha": 170,
+   "width": 1.1,
+   "dash": [
+    1.5,
+    3
+   ],
+   "label_size": 9,
+   "legend": true
+  },
+  "coast": {
+   "color": [
+    64,
+    96,
+    100
+   ],
+   "alpha": 230,
+   "width": 1.3,
+   "legend": true,
+   "casing": 0
+  }
+ },
+ "font_load": "IM Fell English",
+ "texture": {
+  "grain": 0.55,
+  "stains": 0.35,
+  "vignette": 0.38
+ },
+ "frame": {
+  "band_px": 7
+ },
+ "layers_on": [
+  "trees",
+  "blocks"
+ ],
+ "font_body": "'EB Garamond', Georgia, serif"
+}

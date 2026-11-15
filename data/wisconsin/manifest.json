@@ -1,0 +1,177 @@
+{
+ "engine_version": 1,
+ "id": "wisconsin",
+ "title": {
+  "en": "North woods, Wisconsin",
+  "uk": "Північні ліси, Вісконсин"
+ },
+ "subtitle": "NISAR L-band GCOV, four tracks: a year of forest, fields, swamps and lakes",
+ "bbox": [
+  -91.0,
+  45.02,
+  -90.56,
+  45.28
+ ],
+ "center": [
+  -90.78,
+  45.150000000000006
+ ],
+ "dates": [
+  "2025-10-22",
+  "2025-10-25",
+  "2025-11-03",
+  "2025-11-06",
+  "2025-11-15",
+  "2025-11-18",
+  "2025-11-20",
+  "2025-11-30",
+  "2025-12-02",
+  "2025-12-09",
+  "2025-12-14",
+  "2025-12-21",
+  "2025-12-26",
+  "2026-01-02",
+  "2026-01-05",
+  "2026-01-07",
+  "2026-01-14",
+  "2026-01-17",
+  "2026-01-19",
+  "2026-06-17",
+  "2026-06-19",
+  "2026-06-22",
+  "2026-06-29",
+  "2026-07-01",
+  "2026-07-04",
+  "2026-07-11",
+  "2026-07-13",
+  "2026-07-16",
+  "2026-07-23",
+  "2026-07-25",
+  "2026-08-16",
+  "2026-08-18",
+  "2026-08-21",
+  "2026-08-30",
+  "2026-09-02",
+  "2026-09-09",
+  "2026-09-11",
+  "2026-09-14",
+  "2026-09-21",
+  "2026-09-23",
+  "2026-09-26",
+  "2026-10-03",
+  "2026-10-05",
+  "2026-10-08",
+  "2026-10-15",
+  "2026-10-17",
+  "2026-10-20",
+  "2026-10-27",
+  "2026-10-29",
+  "2026-11-01",
+  "2026-11-03"
+ ],
+ "n_pairs": 0,
+ "direction": "ASCENDING+DESCENDING",
+ "reference": {
+  "bbox": null,
+  "label": ""
+ },
+ "anchor": {
+  "type": "radar-only",
+  "gnss": []
+ },
+ "trust": {
+  "snr_strong": 3.0,
+  "snr_weak": 1.0,
+  "segments": true
+ },
+ "stats": {
+  "blocks": {
+   "cells": 1147
+  },
+  "harvest": {
+   "cells": 43,
+   "with_radar_date": 22
+  }
+ },
+ "layers": [
+  {
+   "id": "blocks",
+   "kind": "cells",
+   "file": "blocks.json",
+   "label": {
+    "en": "1 km blocks",
+    "uk": "Блоки 1 км"
+   },
+   "props": [
+    "lon",
+    "lat",
+    "class",
+    "hv_anom_db",
+    "hh_anom_db"
+   ]
+  },
+  {
+   "id": "harvest",
+   "kind": "cells",
+   "file": "harvest.json",
+   "label": {
+    "en": "Crop blocks: harvest",
+    "uk": "Блоки полів: жнива"
+   },
+   "props": [
+    "lon",
+    "lat",
+    "radar_cut",
+    "optical_cut"
+   ]
+  },
+  {
+   "id": "water",
+   "kind": "lines",
+   "file": "ctx_water.geojson",
+   "style": "water",
+   "label": {
+    "en": "Lakes",
+    "uk": "Озера"
+   },
+   "visible": true,
+   "z": 1.2,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "rivers",
+   "kind": "lines",
+   "file": "ctx_rivers.geojson",
+   "style": "river",
+   "label": {
+    "en": "Rivers",
+    "uk": "Річки"
+   },
+   "visible": true,
+   "z": 1.25,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "places",
+   "kind": "lines",
+   "file": "ctx_places.geojson",
+   "style": "place",
+   "label": {
+    "en": "Towns",
+    "uk": "Міста"
+   },
+   "visible": true,
+   "z": 3.6,
+   "attribution": "© OpenStreetMap contributors"
+  }
+ ],
+ "story": "story.json",
+ "notes": [
+  "Built by scripts/export_wisconsin.py from the WS test outputs (notes/experiments.md, sections W, WS, TW)."
+ ],
+ "generated": "2026-11-15T19:55:30",
+ "frame_sub": {
+  "en": "a year of forest and fields heard by the NISAR radar · {a}–{b}",
+  "uk": "рік лісу й полів, почутий радаром NISAR · {a}–{b}"
+ }
+}

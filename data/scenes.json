@@ -1,0 +1,166 @@
+{
+ "atlas": {
+  "title": {
+   "en": "Edelweiss",
+   "uk": "Edelweiss"
+  },
+  "kicker": {
+   "en": "NASA Space Apps Challenge 2026 · Dancing with the SARs",
+   "uk": "NASA Space Apps Challenge 2026 · Dancing with the SARs"
+  },
+  "subtitle": {
+   "en": "An atlas of the moving ground, engraved from NISAR radar",
+   "uk": "Атлас рухомої землі, вигравіюваний з радара NISAR"
+  },
+  "lede": {
+   "en": "Seven plates in three stories. Each plate is one place and one kind of change, drawn the way nineteenth-century engravers drew mountains, and each one tells you how sure it is. Hover a dotted word for its meaning.",
+   "uk": "Сім таблиць у трьох історіях. Кожна таблиця — одне місце й один вид змін, намальований так, як гравери XIX століття малювали гори, і кожна каже, наскільки вона певна. Наведіть на слово, підкреслене крапками, щоб побачити пояснення."
+  },
+  "credits": {
+   "en": "Made in Dnipro, Ukraine. NISAR data: NASA/JPL and ISRO via the ASF DAAC. Relief: Copernicus DEM. Land cover: ESA WorldCover. Map context: © OpenStreetMap contributors. NASA does not endorse any non-U.S. Government entity.",
+   "uk": "Зроблено в Дніпрі, Україна. Дані NISAR: NASA/JPL та ISRO через ASF DAAC. Рельєф: Copernicus DEM. Покрив: ESA WorldCover. Картографічна основа: © учасники OpenStreetMap. NASA не схвалює жодних неурядових організацій поза США."
+  }
+ },
+ "chapters": [
+  {
+   "id": "sinking",
+   "title": {
+    "en": "The ground goes down, the ground comes up",
+    "uk": "Земля опускається, земля здіймається"
+   },
+   "intro": {
+    "en": "A city pumps its water, a mine takes its coal, magma fills a chamber: slow motion of centimetres a year, read from orbit.",
+    "uk": "Місто викачує воду, шахта забирає вугілля, магма наповнює камеру: повільний рух на сантиметри за рік, прочитаний з орбіти."
+   },
+   "scenes": [
+    "mexico-city-asc",
+    "ostrava-asc",
+    "reykjanes"
+   ]
+  },
+  {
+   "id": "sudden",
+   "title": {
+    "en": "Sudden change",
+    "uk": "Раптові зміни"
+   },
+   "intro": {
+    "en": "An earthquake moves a coast in seconds, a debris flow rewrites a valley in minutes. Between two passes twelve days apart the radar sees what moved and what is gone.",
+    "uk": "Землетрус зсуває узбережжя за секунди, сель переписує долину за хвилини. Між двома прольотами з різницею у дванадцять днів радар бачить, що зрушило і чого вже немає."
+   },
+   "scenes": [
+    "panama-quake",
+    "langtang-asc"
+   ]
+  },
+  {
+   "id": "living",
+   "title": {
+    "en": "The living surface",
+    "uk": "Жива поверхня"
+   },
+   "intro": {
+    "en": "Fields are sown, grow and are cut; forests freeze, swamps fill and dry. The radar echo follows the year.",
+    "uk": "Поля засівають, вони ростуть, їх скошують; ліси замерзають, болота наповнюються й висихають. Відлуння радара йде слідом за роком."
+   },
+   "scenes": [
+    "central-valley-asc",
+    "wisconsin"
+   ]
+  }
+ ],
+ "scenes": [
+  {
+   "id": "mexico-city-asc",
+   "title": {
+    "en": "Mexico City",
+    "uk": "Мехіко"
+   },
+   "subtitle": "NISAR L-band GUNW, ascending (morning) pass",
+   "kind": "terrain+velocity+contours+surface+grid",
+   "blurb": {
+    "en": "A city that sinks as it drinks its aquifer, drawn as engraved slopes.",
+    "uk": "Місто, що просідає, випиваючи свій водоносний шар, вигравіюване схилами."
+   }
+  },
+  {
+   "id": "ostrava-asc",
+   "title": {
+    "en": "Ostrava–Karviná coal basin",
+    "uk": "Остравсько-Карвінський вугільний басейн"
+   },
+   "subtitle": "NISAR L-band GUNW, one northbound track: ground sinking over the coal mines",
+   "kind": "terrain+velocity+contours+grid",
+   "blurb": {
+    "en": "Ground sinking over the coal mines on both sides of the Czech–Polish border.",
+    "uk": "Земля просідає над вугільними шахтами по обидва боки чесько-польського кордону."
+   }
+  },
+  {
+   "id": "reykjanes",
+   "title": {
+    "en": "Reykjanes, Iceland",
+    "uk": "Рейк'янес, Ісландія"
+   },
+   "subtitle": "The ground breathes: magma under the peninsula, one packed page",
+   "kind": "page",
+   "href": "reykjanes-scroll.html",
+   "blurb": {
+    "en": "The ground breathes over a magma chamber; the plate is one long page.",
+    "uk": "Земля дихає над магматичною камерою; таблиця — одна довга сторінка."
+   }
+  },
+  {
+   "id": "panama-quake",
+   "title": {
+    "en": "Panama M7.7 earthquake",
+    "uk": "Землетрус M7.7 у Панамі"
+   },
+   "subtitle": "2026-10-09 · fault estimate from two NISAR passes, with a confidence flag",
+   "kind": "quake",
+   "blurb": {
+    "en": "The M7.7 earthquake of 9 October 2026 from two passes, with a confidence flag.",
+    "uk": "Землетрус M7.7 9 жовтня 2026 року за двома прольотами, з позначкою певності."
+   }
+  },
+  {
+   "id": "langtang-asc",
+   "title": {
+    "en": "Langtang valley, Nepal",
+    "uk": "Долина Лангтанг, Непал"
+   },
+   "subtitle": "Debris-flow footprint: where the radar lost the ground's fingerprint",
+   "kind": "terrain+footprint",
+   "blurb": {
+    "en": "Where the radar lost the ground's fingerprint: the footprint of a debris flow.",
+    "uk": "Де радар утратив відбиток землі: слід селевого потоку."
+   }
+  },
+  {
+   "id": "central-valley-asc",
+   "title": {
+    "en": "Central Valley, California",
+    "uk": "Центральна долина, Каліфорнія"
+   },
+   "subtitle": "Rhythm of the fields: radar coherence through the farming year",
+   "kind": "fields",
+   "blurb": {
+    "en": "The farming year in radar coherence: sowing, growth, harvest.",
+    "uk": "Рільничий рік у когерентності радара: сівба, ріст, жнива."
+   }
+  },
+  {
+   "id": "wisconsin",
+   "title": {
+    "en": "North woods, Wisconsin",
+    "uk": "Північні ліси, Вісконсин"
+   },
+   "subtitle": "NISAR L-band GCOV, four tracks: a year of forest, fields, swamps and lakes",
+   "kind": "cells",
+   "blurb": {
+    "en": "A year of forest, fields, swamps and lakes in the radar echo.",
+    "uk": "Рік лісу, полів, боліт і озер у відлунні радара."
+   }
+  }
+ ]
+}

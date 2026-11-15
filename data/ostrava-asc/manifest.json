@@ -1,0 +1,221 @@
+{
+ "engine_version": 1,
+ "id": "ostrava-asc",
+ "title": {
+  "en": "Ostrava–Karviná coal basin",
+  "uk": "Остравсько-Карвінський вугільний басейн"
+ },
+ "subtitle": "NISAR L-band GUNW, one northbound track: ground sinking over the coal mines",
+ "frame_sub": null,
+ "bbox": [
+  18.15,
+  49.7,
+  18.8,
+  50.05
+ ],
+ "center": [
+  18.475,
+  49.875
+ ],
+ "dates": [
+  "2026-06-25",
+  "2026-07-07",
+  "2026-07-19",
+  "2026-08-12",
+  "2026-08-24",
+  "2026-09-05",
+  "2026-09-17",
+  "2026-09-29",
+  "2026-10-11"
+ ],
+ "n_pairs": 8,
+ "direction": "ASCENDING",
+ "reference": {
+  "bbox": [
+   18.15,
+   49.815,
+   18.19,
+   49.84
+  ],
+  "label": "Ostrava-Poruba (housing estate west of the undermined area)"
+ },
+ "anchor": {
+  "type": "radar-only",
+  "gnss": []
+ },
+ "trust": {
+  "snr_strong": 3.0,
+  "snr_weak": 1.0,
+  "segments": true
+ },
+ "stats": {
+  "velocity": {
+   "strokes": 4839,
+   "trust": {
+    "strong": 2158,
+    "weak": 1421,
+    "below": 1260
+   },
+   "deepest_cm": -10.5,
+   "band_cm": 2.0,
+   "headline": {
+    "rate_cm_yr": -30.4,
+    "sigma_cm_yr": 3.3,
+    "at_least_cm_yr": -23.8,
+    "lon": 18.6119,
+    "lat": 49.9892,
+    "cum_cm": -31.4,
+    "block_m": 500.0,
+    "p1_cm_yr": -26.2,
+    "rule": "~1.5 km neighbourhood (3x3 well-covered 500 m blocks) with the most negative rate + 2 sigma; single pass, LOS taken as vertical"
+   }
+  }
+ },
+ "layers": [
+  {
+   "id": "terrain",
+   "kind": "hachures-static",
+   "file": "terrain.geojson",
+   "label": {
+    "en": "Relief",
+    "uk": "Рельєф"
+   },
+   "props": [
+    "dark"
+   ]
+  },
+  {
+   "id": "velocity",
+   "kind": "hachures-time",
+   "file": "velocity.geojson",
+   "label": {
+    "en": "Ground motion",
+    "uk": "Рух ґрунту"
+   },
+   "props": [
+    "rate_cm_yr",
+    "sigma_cm_yr",
+    "snr",
+    "segments",
+    "trust",
+    "dark",
+    "sense",
+    "t"
+   ]
+  },
+  {
+   "id": "contours",
+   "kind": "contours",
+   "file": "contours.geojson",
+   "label": {
+    "en": "Depth lines",
+    "uk": "Лінії глибини"
+   },
+   "props": [
+    "level_cm",
+    "major",
+    "d"
+   ],
+   "unit": "cm",
+   "step_cm": 5
+  },
+  {
+   "id": "grid",
+   "kind": "cells",
+   "file": "grid.json",
+   "label": {
+    "en": "Trust cells",
+    "uk": "Клітинки довіри"
+   },
+   "props": [
+    "lon",
+    "lat",
+    "rate_cm_yr",
+    "sigma_cm_yr",
+    "segments",
+    "cum_cm"
+   ]
+  },
+  {
+   "id": "water",
+   "kind": "lines",
+   "file": "ctx_water.geojson",
+   "style": "water",
+   "label": {
+    "en": "Ponds and subsidence lakes",
+    "uk": "Ставки й озера просідання"
+   },
+   "visible": true,
+   "z": 1.2,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "rivers",
+   "kind": "lines",
+   "file": "ctx_rivers.geojson",
+   "style": "river",
+   "label": {
+    "en": "Rivers",
+    "uk": "Річки"
+   },
+   "visible": true,
+   "z": 1.25,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "rail",
+   "kind": "lines",
+   "file": "ctx_rail.geojson",
+   "style": "rail",
+   "label": {
+    "en": "Railways",
+    "uk": "Залізниці"
+   },
+   "visible": false,
+   "z": 3.5,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "places",
+   "kind": "lines",
+   "file": "ctx_places.geojson",
+   "style": "place",
+   "label": {
+    "en": "Towns",
+    "uk": "Міста"
+   },
+   "visible": true,
+   "z": 3.6,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "bowls",
+   "kind": "lines",
+   "file": "bowls.geojson",
+   "style": "bowl",
+   "z": 3.55,
+   "visible": true,
+   "label": {
+    "en": "Subsidence bowls: seen on 3 tracks, enough data",
+    "uk": "Мульди просідання: видно на 3 треках, даних досить"
+   }
+  },
+  {
+   "id": "bowls_candidate",
+   "kind": "lines",
+   "file": "bowls_candidate.geojson",
+   "style": "bowl_candidate",
+   "z": 3.54,
+   "visible": true,
+   "label": {
+    "en": "Candidate bowls, not confirmed",
+    "uk": "Кандидати в мульди, не підтверджені"
+   }
+  }
+ ],
+ "notes": [
+  "Reference area chosen from the map before the build (built-up, west of the mining area); check its stability against Oleh's bowls (block O)."
+ ],
+ "generated": "2026-11-15T19:03:09",
+ "story": "story.json"
+}
