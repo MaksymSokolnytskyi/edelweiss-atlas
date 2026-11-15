@@ -190,6 +190,19 @@
    "attribution": "© OpenStreetMap contributors"
   },
   {
+   "id": "rail",
+   "kind": "lines",
+   "file": "ctx_rail.geojson",
+   "style": "rail",
+   "label": {
+    "en": "Railways",
+    "uk": "Залізниці"
+   },
+   "visible": true,
+   "z": 1.25,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
    "id": "trees",
    "kind": "lines",
    "file": "ctx_trees.geojson",
@@ -232,6 +245,7 @@
   "trees",
   "built",
   "roads",
+  "rail",
   "water",
   "rivers",
   "places"

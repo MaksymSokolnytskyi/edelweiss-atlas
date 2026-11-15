@@ -153,6 +153,32 @@
    "attribution": "© OpenStreetMap contributors"
   },
   {
+   "id": "roads",
+   "kind": "lines",
+   "file": "ctx_roads.geojson",
+   "style": "road",
+   "label": {
+    "en": "Main roads",
+    "uk": "Головні дороги"
+   },
+   "visible": true,
+   "z": 1.25,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "rail",
+   "kind": "lines",
+   "file": "ctx_rail.geojson",
+   "style": "rail",
+   "label": {
+    "en": "Railways",
+    "uk": "Залізниці"
+   },
+   "visible": true,
+   "z": 1.25,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
    "id": "trees",
    "kind": "lines",
    "file": "ctx_trees.geojson",
@@ -194,6 +220,8 @@
   "terrain",
   "trees",
   "built",
+  "roads",
+  "rail",
   "water",
   "rivers",
   "canals",
