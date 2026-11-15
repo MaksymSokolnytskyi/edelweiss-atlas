@@ -208,3 +208,7 @@ body[data-theme="scroll"] #sheet { border-style: double; border-width: 3px; }
            background: var(--panel-bg); border-radius: 50%; box-shadow: 0 0 0 3px var(--panel-bg), 0 0 0 4px var(--panel-border); }
 #locator.hidden { display: none; }
 @media (max-width: 760px) { #locator { width: 84px; height: 84px; bottom: 26px; } #locator svg { width: 84px; height: 84px; } }
+
+/* questions after the story: the appendix pages, offered on the last page */
+#story .st-questions { margin: 10px 0 2px; font-size: 14.5px; color: var(--muted); }
+#story .st-questions a { color: var(--ink); }

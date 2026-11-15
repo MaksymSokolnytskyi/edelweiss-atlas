@@ -47,7 +47,7 @@ const STR = {
         score_sound_t: "кожен дзвін — ще 2 см опускання: що швидше район сідає, то частіше дзвонить; нерухомі мовчать",
         lg_change: "радар втратив відбиток між двома прольотами (сніг, вода, обвал)", lg_change_event: "пляма, що лишається: селевий потік",
         story_intro: "таблиця", story_what: "що змінилось", story_why: "чому", story_sure: "наскільки певні",
-        story_next: "що ще може NISAR", story_listen: "послухати", story_back: "Назад", story_next_btn: "Далі",
+        story_next: "що ще може NISAR", story_listen: "послухати", story_back: "Назад", story_next_btn: "Далі", questions: "Питання, які можуть виникнути", to_story: "До історії", 
         story_explore: "досліджувати мапу самому ✕", story_open: "Читати таблицю ▸",
         contents: "☰ Зміст", glossary: "Слова, вжиті в атласі", next_plate: "Наступна таблиця", the_end: "Кінець атласу: до змісту" },
   en: { scene: "Place", theme: "Style", trust: "Trust", trust_fade: "weak strokes faded", trust_strong: "reliable only",
@@ -88,7 +88,7 @@ const STR = {
         score_sound_t: "each chime = 2 more cm of sinking: the faster a district sinks, the more often it chimes; still ground stays silent",
         lg_change: "the radar lost the ground's fingerprint between two passes (snow, water, a slide)", lg_change_event: "the patch that stays: the debris flow",
         story_intro: "plate", story_what: "what changed", story_why: "why", story_sure: "how sure",
-        story_next: "what else NISAR can do", story_listen: "listen", story_back: "Back", story_next_btn: "Next",
+        story_next: "what else NISAR can do", story_listen: "listen", story_back: "Back", story_next_btn: "Next", questions: "Questions you may have", to_story: "To the story", 
         story_explore: "explore the map yourself ✕", story_open: "Read the plate ▸",
         contents: "☰ Contents", glossary: "Words used in the atlas", next_plate: "Next plate", the_end: "End of the atlas: back to the contents" },
 };
@@ -106,7 +106,7 @@ const state = { scene: null, theme: null, man: null, data: {}, visible: {}, mode
                 storyData: null, storyOn: false, page: 0, marks: [] };
 let map, overlay;
 window.SAR = { get map() { return map; }, get overlay() { return overlay; }, get state() { return state; },   // console debugging
-               page: (i) => applyPage(i, true) };
+               page: (i) => applyPage(i, true), day: (d) => setDay(d) };
 
 // ---------------------------------------------------------------- helpers
 function ramp(stops, v) {
@@ -130,8 +130,18 @@ function seriesIndex(d) {          // index of the last series date at or before
   return k;
 }
 
-function cellValue(d, m, c) {
-  if (m.time) return c[d.columns.indexOf(m.series || d.series)]?.[seriesIndex(d)];   // a mode may name its own series
+// between two series dates: [index before, index after, 0..1 of the way]; tints and lines cross-fade, so change flows
+function seriesBlend(dates) {
+  if (!dates || dates.length < 2) return [0, 0, 0];
+  let k = 0;
+  for (let i = 0; i < dates.length; i++) if (dayOf(dates[i]) <= state.day + 0.5) k = i;
+  if (k >= dates.length - 1) return [k, k, 0];
+  const a = dayOf(dates[k]), b = dayOf(dates[k + 1]);
+  return [k, k + 1, Math.max(0, Math.min(1, (state.day - a) / Math.max(1, b - a)))];
+}
+
+function cellValue(d, m, c, k) {
+  if (m.time) return c[d.columns.indexOf(m.series || d.series)]?.[k ?? seriesIndex(d)];   // a mode may name its own series
   return c[d.columns.indexOf(m.key)];
 }
 
@@ -508,9 +518,15 @@ function depthTint(th) {
   const cache = {};
   const colorOf = (x) => { const b = Math.min(K, Math.floor(Math.abs(x) / step)); if (b < 1) return null;
     const key = (x < 0 ? -b : b); return cache[key] || (cache[key] = tone(x < 0 ? T0.down : T0.up, b)); };
-  const bm = tintBitmap(d, ["depth", th.name, k, step].join("|"), (c) => c[ci]?.[k], colorOf);
-  return bm && new deck.BitmapLayer({ id: "depth-tint-" + k, image: bm.img, bounds: bm.bounds,
-    textureParameters: { [10240]: 9729, [10241]: 9729 } });
+  const [k0, k1, f] = seriesBlend(d.dates), out = [];
+  for (const [kk, op] of [[k0, 1], [k1, f]]) {
+    if (op < 0.02 || (kk === k0 && out.length)) continue;
+    const bm = tintBitmap(d, ["depth", th.name, kk, step].join("|"), (c) => c[ci]?.[kk], colorOf);
+    if (bm) out.push(new deck.BitmapLayer({ id: "depth-tint-" + kk + (kk === k0 ? "" : "-in"), image: bm.img, bounds: bm.bounds, opacity: op,
+      textureParameters: { [10240]: 9729, [10241]: 9729 } }));
+    if (k1 === k0) break;
+  }
+  return out;
 }
 const tintStep = (th) => state.man?.tint_step ?? th.tint?.step ?? 10;
 
@@ -564,7 +580,7 @@ function buildLayers() {
   const story = man.layers.some((l) => state.visible[l.id] && (l.kind === "hachures-time" || l.kind === "cells"));
   const quiet = story ? th.quiet ?? 0.5 : 1;
   const tint = depthTint(th);
-  if (tint) L.push(tint);
+  if (tint && tint.length) L.push(...tint);
   for (const lay of [...man.layers].sort((a, b) => zOf(a) - zOf(b))) {
     if (!state.visible[lay.id]) continue;
     const d = state.data[lay.id];
@@ -596,10 +612,15 @@ function buildLayers() {
       }
     } else if (lay.kind === "contours") {
       const c = th.contours || { color: [0, 0, 0], alpha: 140, w: 0.5, w_major: 1, label_size: 11 };
-      const di = dateIndex(), stepC = th.tint && tint ? tintStep(th) : 0;
-      const lines = d.features.filter((f) => f.properties.d === di && (!stepC || Math.abs(f.properties.level_cm) % stepC === 0));
+      const di = dateIndex(), stepC = th.tint && tint?.length ? tintStep(th) : 0;
+      const keep = (f, k) => f.properties.d === k && (!stepC || Math.abs(f.properties.level_cm) % stepC === 0);
+      const lines = d.features.filter((f) => keep(f, di));
+      const [, dn, fr] = seriesBlend(state.man.dates);            // the next date's lines fade in as the slider moves on
       L.push(new deck.PathLayer({ id: lay.id + "-" + di, data: lines, widthUnits: "pixels",
-        getPath: (f) => f.geometry.coordinates, getColor: [...c.color, c.alpha],
+        getPath: (f) => f.geometry.coordinates, getColor: [...c.color, c.alpha], opacity: dn !== di ? 1 - 0.6 * fr : 1,
+        getWidth: (f) => (f.properties.major || stepC ? c.w_major : c.w) }));
+      if (dn !== di && fr > 0.05) L.push(new deck.PathLayer({ id: lay.id + "-" + dn + "-in", data: d.features.filter((f) => keep(f, dn)),
+        widthUnits: "pixels", getPath: (f) => f.geometry.coordinates, getColor: [...c.color, c.alpha], opacity: fr,
         getWidth: (f) => (f.properties.major || stepC ? c.w_major : c.w) }));
       const labels = lines.filter((f) => (f.properties.major || stepC) && f.geometry.coordinates.length >= 12).map((f) => {
         const q = f.geometry.coordinates, m = Math.floor(q.length / 2), a = q[m - 2], b = q[m + 2];
@@ -621,11 +642,17 @@ function buildLayers() {
             return [[c[0] - k, c[1] - half], [c[0] + k, c[1] - half], [c[0] + k, c[1] + half], [c[0] - k, c[1] + half]]; },
           getFillColor: color, updateTriggers: { getFillColor: [th.name, m.key, tkey] } }));
       } else if (th.cells_as === "tint") {
-        const bm = m.categorical ? tintBitmap(d, [th.name, m.key, tkey, "rgba"].join("|"), (c) => { const k = color(c); return k && k[3] > 0 ? k : [k[0], k[1], k[2], 0]; }, null)
-                                 : tintBitmap(d, [th.name, m.key, tkey].join("|"), (c) => cellValue(d, m, c), (x) => ramp(th.ramps[m.ramp], x));
-        if (bm) L.push(new deck.BitmapLayer({ id: lay.id + "-" + m.key + "-t" + tkey, image: bm.img, bounds: bm.bounds, opacity: th.tint?.cells_opacity ?? 1,
+        const draw = (k) => m.categorical
+          ? tintBitmap(d, [th.name, m.key, k, "rgba"].join("|"), (c) => { const q = m.time ? (th.categorical[m.categorical] || [])[cellValue(d, m, c, k)] : color(c);
+              return q ? (q[3] > 0 ? q : [q[0], q[1], q[2], 0]) : null; }, null)
+          : tintBitmap(d, [th.name, m.key, k].join("|"), (c) => cellValue(d, m, c, k), (x) => ramp(th.ramps[m.ramp], x));
+        const bm = draw(tkey), op = th.tint?.cells_opacity ?? 1, [, kn, fr] = m.time ? seriesBlend(d.dates) : [0, tkey, 0];
+        if (bm) L.push(new deck.BitmapLayer({ id: lay.id + "-" + m.key + "-t" + tkey, image: bm.img, bounds: bm.bounds, opacity: op,
           textureParameters: { [10240]: 9729, [10241]: 9729 } }));
-        else L.push(new deck.PathLayer({ id: lay.id + "-" + m.key + "-h", data: hatchCells(d, m, color, th, tkey),
+        const bn = kn !== tkey && fr > 0.03 ? draw(kn) : null;
+        if (bn) L.push(new deck.BitmapLayer({ id: lay.id + "-" + m.key + "-t" + kn + "-in", image: bn.img, bounds: bn.bounds, opacity: op * fr,
+          textureParameters: { [10240]: 9729, [10241]: 9729 } }));
+        if (m.categorical || !bm) L.push(new deck.PathLayer({ id: lay.id + "-" + m.key + "-h", data: hatchCells(d, m, color, th, tkey),   // classes: engraved over the wash
           widthUnits: "pixels", capRounded: true, getPath: (h) => h.p, getColor: (h) => h.c, getWidth: (h) => h.w,
           updateTriggers: { getColor: [th.name, m.key, tkey] } }));
       } else if (th.cells_as !== "dots") {
@@ -661,6 +688,15 @@ function buildLayers() {
         getLineColor: s.line,
         getLineWidth: (f) => (f.properties.part === "top_edge" ? s.edge_width || s.width * 2 : s.width),
         updateTriggers: { getFillColor: th.name, getLineColor: th.name, getLineWidth: th.name } }));
+    }
+    if (state.focus?.ids.has(lay.id) && state.focus.k > 0.02) {
+      const k = state.focus.k;
+      for (let j = from; j < L.length; j++) if (!(L[j] instanceof deck.TextLayer)) {
+        const pr = L[j].props, w0 = pr.widthScale ?? pr.lineWidthScale ?? 1;
+        L[j] = L[j].clone({ id: L[j].id + "-pulse", widthScale: w0 * (1 + 2.2 * k), lineWidthScale: (pr.lineWidthScale ?? 1) * (1 + 2.2 * k),
+                             widthMinPixels: 1 + 2 * k, opacity: Math.min(1, (pr.opacity ?? 1) + k) });
+      }
+      continue;                                                  // a focused layer is never quietened
     }
     if (quiet < 1 && ["hachures-static", "lines", "image"].includes(lay.kind) && !lay.loud) {
       for (let i = from; i < L.length; i++) if (!(L[i] instanceof deck.TextLayer)) L[i] = L[i].clone({ opacity: (L[i].props.opacity ?? 1) * quiet });
@@ -1534,7 +1570,7 @@ function togglePlay() {
   const step = (now) => {
     if (!state.playing) return;
     const dt = Math.max(0, Math.min(100, now - last)); last = now;   // the first frame may be stamped before the click
-    const dur = scoreLayer() ? 18000 : 4000;                           // with the score on, a year takes ~18 s: one beat ≈ 0.6 s
+    const dur = scoreLayer() ? 18000 : state.theme.play_ms ?? 11000;    // a year in ~11 s; with the score on ~18 s (one beat ≈ 0.6 s)
     const nd = Math.min(state.maxDay, state.day + state.maxDay * dt / dur); setDay(nd);
     if (nd >= state.maxDay) { state.playing = false; for (const b of [$("play"), document.getElementById("sc-play"), document.getElementById("st-play")]) if (b) b.textContent = "▶"; return; }
     requestAnimationFrame(step);
@@ -1699,6 +1735,21 @@ function applyPage(i, instant) {
   drawNotes(); setParam("page", i + 1);
 }
 
+// the layers a page names in "focus" swell and fade three times (about 2.4 s), so the eye finds them before the text
+function pulse(ids, i) {
+  const t0 = performance.now(), D = 2400;
+  state.focus = { ids: new Set(ids), k: 0 };
+  const step = () => {
+    const t = performance.now();
+    if (state.page !== i || !state.storyOn) { state.focus = null; redraw(); return; }
+    const u = (t - t0) / D;
+    if (u >= 1) { state.focus = null; redraw(); return; }
+    state.focus.k = Math.sin(u * Math.PI * 3) ** 2;           // three swells
+    redraw(); setTimeout(step, 33);
+  };
+  setTimeout(step, 33);
+}
+
 function storyCamera(p, i, instant) {
   const c = p.camera || {}, wide = innerWidth > 700, card = $("story").getBoundingClientRect();
   const sh = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--score-h")) || 0;
@@ -1710,19 +1761,31 @@ function storyCamera(p, i, instant) {
   if (c.bbox) map.fitBounds([[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]], opt);
   else map.easeTo({ center: c.center, zoom: c.zoom, ...opt });
   if (p.play) map.once("moveend", () => { if (state.storyOn && state.page === i && !state.playing) togglePlay(); });
+  if (p.focus) map.once("moveend", () => { if (state.storyOn && state.page === i) pulse(p.focus, i); });
 }
+
+// pages marked "appendix" stay out of the reading order: the story runs through the others, and its last page offers
+// the appendix as questions a reader may have ("how sure are we?")
+const mainPages = () => state.storyData.pages.map((q, k) => (q.appendix ? -1 : k)).filter((k) => k >= 0);
+const stepPage = (i, d) => { const m = mainPages(), S = state.storyData;
+  if (S.pages[i]?.appendix) return d < 0 ? m.at(-1) : null;
+  const k = m.indexOf(i) + d; return k >= 0 && k < m.length ? m[k] : null; };
 
 function renderStoryCard() {
   const S = state.storyData, i = state.page, p = S.pages[i], n = S.pages.length, box = $("story");
+  const mp = mainPages(), apx = S.pages.map((q, k) => (q.appendix ? k : -1)).filter((k) => k >= 0);
   const facts = (p.facts || []).map((f) => `<div class="fact"><div class="fv">${f.value}${f.unit ? `<small> ${label(f.unit)}</small>` : ""}</div>` +
     `<div class="fl">${label(f.label)}</div></div>`).join("");
   const legend = p.legend ? [...$("legend").querySelectorAll(".legend-item")].map((e) => e.outerHTML).join("") : "";
-  const tabs = S.pages.map((q, k) => `<button class="tab${k === i ? " on" : ""}" data-k="${k}" title="${label(q.title)}">${ROMAN[k] || k + 1}</button>`).join("");
+  const tabs = mp.map((k, r) => `<button class="tab${k === i ? " on" : ""}" data-k="${k}" title="${label(S.pages[k].title)}">${ROMAN[r] || r + 1}</button>`).join("") +
+    (p.appendix ? `<button class="tab on" data-k="${i}" title="${label(p.title)}">?</button>` : "");
   const timed = needsTime() && state.man.dates.length > 1;
   // one paragraph up front, the rest behind "Tell me more"; "How sure" pages show everything (doubts are never folded away)
   const keep = p.keep ?? 1;
   state.sheetParas = (p.text || []).slice(keep);
-  const ch = chapterOf(state.scene), last = i === n - 1, at = atlas.order.indexOf(state.scene);
+  const ch = chapterOf(state.scene), last = i === mp.at(-1), at = atlas.order.indexOf(state.scene);
+  const questions = last && apx.length ? `<div class="st-questions">${T("questions")}: ` +
+    apx.map((k) => `<a href="#" data-k="${k}">${label(S.pages[k].title)}</a>`).join(" · ") + `</div>` : "";
   const nextId = last && at >= 0 ? atlas.order[at + 1] : null, nextSc = nextId && sceneById(nextId);
   const onward = !last || at < 0 ? "" : nextSc
     ? `<div class="st-onward">${T("next_plate")}${chapterOf(nextId) !== ch ? ` · ${ROMAN[chapterOf(nextId)]}` : ""}: <a href="#" data-go="${nextId}">${label(nextSc.title)} →</a></div>`
@@ -1733,13 +1796,14 @@ function renderStoryCard() {
     `<h2>${label(p.title)}</h2>${(p.text || []).slice(0, keep).map((t) => `<p>${label(t)}</p>`).join("")}` +
     (state.sheetParas.length ? `<button class="st-more-btn" id="st-more">${state.moreOpen ? T("less") : T("more")}</button>` : "") +
     (facts ? `<div class="facts">${facts}</div>` : "") + (legend ? `<div class="st-legend">${legend}</div>` : "") +
-    (timed ? `<div class="st-time"><button id="st-play">${state.playing ? "❚❚" : "▶"}</button><span id="st-date"></span></div>` : "") + onward +
-    `<nav><button id="st-prev"${i ? "" : " disabled"}>← ${T("story_back")}</button><span class="tabs">${tabs}</span>` +
-    `<button id="st-next"${i < n - 1 || onward ? "" : " disabled"}>${T("story_next_btn")} →</button></nav>` +
+    (timed ? `<div class="st-time"><button id="st-play">${state.playing ? "❚❚" : "▶"}</button><span id="st-date"></span></div>` : "") + questions + onward +
+    `<nav><button id="st-prev"${stepPage(i, -1) != null ? "" : " disabled"}>← ${T(p.appendix ? "to_story" : "story_back")}</button><span class="tabs">${tabs}</span>` +
+    `<button id="st-next"${stepPage(i, 1) != null || onward ? "" : " disabled"}>${T("story_next_btn")} →</button></nav>` +
     `<div class="st-foot"><a href="#" id="st-explore">${T("story_explore")}</a></div>`;
   box.classList.remove("turn"); void box.offsetWidth; box.classList.add("turn");      // a short page-turn
-  $("st-prev").onclick = () => applyPage(i - 1);
-  $("st-next").onclick = () => (last ? goPlate(nextId) : applyPage(i + 1));
+  $("st-prev").onclick = () => applyPage(stepPage(i, -1));
+  $("st-next").onclick = () => (last ? goPlate(nextId) : stepPage(i, 1) != null && applyPage(stepPage(i, 1)));
+  box.querySelectorAll(".st-questions [data-k]").forEach((a) => (a.onclick = (e) => { e.preventDefault(); applyPage(+a.dataset.k); }));
   box.querySelectorAll("[data-go]").forEach((a) => (a.onclick = (e) => { e.preventDefault(); goPlate(a.dataset.go); }));
   if ($("st-toc")) $("st-toc").onclick = (e) => { e.preventDefault(); showCover(true); };
   glossify([...box.querySelectorAll("p, .fl")]);
@@ -1794,6 +1858,20 @@ function renderSheet() {
   glossify([...sh.querySelectorAll("p")]);
 }
 
+// small engraved signs for call-outs, drawn in ink strokes like the relief (centred on 0,0, about 26 px)
+const SIGNS = {
+  tree: "M0,13V5M-9,5L0,-3L9,5M-7,0L0,-8L7,0M-5,-5L0,-13L5,-5M-5,3H5M-3,-2H3",
+  corn: "M0,13C1,4 -1,-4 0,-13M0,7C-5,4 -9,0 -11,-5M0,2C5,-1 9,-5 10,-10M-1,-3C-5,-5 -7,-8 -8,-12" +
+        "M3,-9C6,-7 6,2 3,4C0,2 0,-7 3,-9ZM2,-6H5M1.5,-3H5M2,0H4.5",
+  soy: "M0,13V-4M0,4C-4,4 -8,1 -8,-3C-4,-3 -1,0 0,4M0,0C4,0 8,-3 8,-7C4,-7 1,-4 0,0M0,-4C-3,-7 -2,-12 0,-13C2,-12 3,-7 0,-4" +
+       "M3,8C6,7 8,9 8,11M-3,9C-6,8 -8,10 -8,12",
+  sheaf: "M-6,-12L-1,2L-6,12M-3,-13L0,2L-3,13M0,-13V13M3,-13L0,2L3,13M6,-12L1,2L6,12M-5,1.5H5M-5,3H5",
+  drop: "M0,-12C5,-4 8,0 8,4A8,8 0 0 1 -8,4C-8,0 -5,-4 0,-12ZM-4,2H4M-5,5H5M-4,8H4",
+  frost: "M0,-12V12M-10.4,-6L10.4,6M-10.4,6L10.4,-6M-3,-9L0,-6L3,-9M-3,9L0,6L3,9M-8,-1L-5,-3M8,1L5,3M-8,1L-5,3M8,-1L5,-3",
+  field: "M-12,6L-4,-8H12L4,6ZM-9,4L-2,-6M-5,4L2,-6M-1,4L6,-6M3,4L10,-6",
+  lake: "M-12,-4C-8,-7 -4,-1 0,-4C4,-7 8,-1 12,-4M-12,2C-8,-1 -4,5 0,2C4,-1 8,5 12,2M-9,8C-6,5 -3,11 0,8C3,5 6,11 9,8",
+};
+
 function drawNotes() {             // engraved call-outs: a ring on the place, a leader line, an italic note
   const svg = $("notes"), marks = state.storyOn ? state.marks || [] : [];
   if (!map || !marks.length) { svg.classList.add("hidden"); svg.innerHTML = ""; return; }
@@ -1803,9 +1881,13 @@ function drawNotes() {             // engraved call-outs: a ring on the place, a
   let s = "";
   for (const m of marks) {
     const P = map.project([m.lon, m.lat]), dx = m.dx ?? 30, dy = m.dy ?? -24, x = P.x + dx, y = P.y + dy;
-    const end = dx < 0 ? "end" : "start", tx = x + (dx < 0 ? -4 : 4);
-    s += `<circle cx="${P.x}" cy="${P.y}" r="4.5" fill="none" stroke="${ink}" stroke-width="1.3"/>` +
-         `<line x1="${P.x + (dx > 0 ? 3 : -3)}" y1="${P.y + (dy > 0 ? 3 : -3)}" x2="${x}" y2="${y}" stroke="${ink}" stroke-width="0.8"/>` +
+    const sign = SIGNS[m.icon], gap = sign ? 34 : 4, end = dx < 0 ? "end" : "start", tx = x + (dx < 0 ? -gap : gap);
+    // the place is ringed in ink: a ground radius (r_m) gives an ink loop around the area the page talks about
+    const mpp = 40075016.7 * Math.cos(m.lat * Math.PI / 180) / (512 * 2 ** map.getZoom()), rr = m.r_m ? Math.max(9, m.r_m / mpp) : 4.5;
+    s += `<circle cx="${P.x}" cy="${P.y}" r="${rr}" fill="none" stroke="${ink}" stroke-width="${m.r_m ? 1.6 : 1.3}"${m.r_m ? ' stroke-dasharray="7 3 1.5 3"' : ""}/>` +
+         `<line x1="${P.x + (dx > 0 ? 1 : -1) * rr * 0.7}" y1="${P.y + (dy > 0 ? 1 : -1) * rr * 0.7}" x2="${x}" y2="${y}" stroke="${ink}" stroke-width="0.8"/>` +
+         (sign ? `<g transform="translate(${x + (dx < 0 ? -17 : 17)},${y})"><circle r="16" fill="${paper}" fill-opacity=".85" stroke="${ink}" stroke-width=".7"/>` +
+                 `<path d="${sign}" fill="none" stroke="${ink}" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" transform="scale(.95)"/></g>` : "") +
          `<text x="${tx}" y="${y + 4}" text-anchor="${end}" class="nt">${label(m.text)}</text>`;
   }
   svg.innerHTML = `<style>.nt{font-family:${th.font.replace(/"/g, "'")};font-size:14px;font-style:italic;fill:${ink};` +
@@ -1931,8 +2013,8 @@ async function main() {
   addEventListener("keydown", (e) => {
     if (coverOn()) return;                          // the title page is read with the mouse
     if (!state.storyOn || /INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName || "")) return;
-    if (["ArrowRight", "PageDown"].includes(e.key)) { e.preventDefault(); applyPage(state.page + 1); }
-    else if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); applyPage(state.page - 1); }
+    if (["ArrowRight", "PageDown"].includes(e.key)) { e.preventDefault(); const k = stepPage(state.page, 1); if (k != null) applyPage(k); }
+    else if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); const k = stepPage(state.page, -1); if (k != null) applyPage(k); }
     else if (e.key === "Escape") storyOpen(false);
   });
 }

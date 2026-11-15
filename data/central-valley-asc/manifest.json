@@ -179,6 +179,19 @@
    "attribution": "© OpenStreetMap contributors"
   },
   {
+   "id": "streets",
+   "kind": "lines",
+   "file": "ctx_streets.geojson",
+   "style": "street",
+   "label": {
+    "en": "Town streets",
+    "uk": "Вулиці міст"
+   },
+   "visible": true,
+   "z": 1.15,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
    "id": "trees",
    "kind": "lines",
    "file": "ctx_trees.geojson",
@@ -220,6 +233,7 @@
   "terrain",
   "trees",
   "built",
+  "streets",
   "roads",
   "rail",
   "water",
