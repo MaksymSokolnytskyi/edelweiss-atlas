@@ -190,7 +190,7 @@ function textLayer(id, data, th, o) {
   return new deck.TextLayer({ id, data, getPosition: (x) => x.p, getText: (x) => x.s, getAngle: (x) => x.a,
     getSize: (o.size || 11) + (th.label_bump ?? 0), sizeUnits: "pixels", getColor: o.color || [0, 0, 0, 255], fontFamily: th.label_font || th.font,
     fontWeight: (o.italic ? "italic " : "") + (o.bold ? "bold" : th.label_weight || "normal"), getPixelOffset: o.offset || [0, 0],
-    characterSet: chars, fontSettings: { sdf: true, buffer: 8, radius: 14 }, outlineWidth: o.halo || o.bold ? 6 : 0,
+    characterSet: chars, fontSettings: { sdf: true, buffer: 10, radius: 16 }, outlineWidth: o.halo || o.bold ? (th.label_halo ?? 7) : 0,
     outlineColor: [...(th.paper_rgb || [255, 255, 255]), 255], billboard: true });
 }
 
@@ -419,6 +419,7 @@ function hatchGrid(d) {
 // a smooth wash of tone from the block values: bilinear between block centres, drawn once per date into a bitmap
 const _tintCache = new WeakMap();
 function tintBitmap(d, key, valueOf, colorOf) {
+  if (!colorOf) return tintBitmapRGBA(d, key, valueOf);
   let byKey = _tintCache.get(d);
   if (!byKey) { byKey = new Map(); _tintCache.set(d, byKey); }
   if (byKey.has(key)) return byKey.get(key);
@@ -443,6 +444,42 @@ function tintBitmap(d, key, valueOf, colorOf) {
       const k = colorOf(sum / w);
       if (!k || !(k[3] > 0)) continue;
       const o = (py * cw + qx) * 4; px[o] = k[0]; px[o + 1] = k[1]; px[o + 2] = k[2]; px[o + 3] = k[3];
+    }
+  }
+  ctx.putImageData(im, 0, 0);
+  const out = { img: cv, bounds: [g.x0 - 0.5 * g.dx, g.y0 - 0.5 * g.dy, g.x0 + (g.nx + 0.5) * g.dx, g.y0 + (g.ny + 0.5) * g.dy] };
+  if (byKey.size > 12) byKey.clear();
+  byKey.set(key, out);
+  return out;
+}
+
+function tintBitmapRGBA(d, key, rgbaOf) {             // rgbaOf(cell) -> [r, g, b, a]; channels blended bilinearly
+  let byKey = _tintCache.get(d);
+  if (!byKey) { byKey = new Map(); _tintCache.set(d, byKey); }
+  if (byKey.has(key)) return byKey.get(key);
+  const g = hatchGrid(d);
+  if (!g.nx) return null;
+  const W = g.nx + 1, H = g.ny + 1, val = new Float32Array(W * H * 4).fill(NaN);
+  for (const [k, c] of g.at) { const [i, j] = k.split(",").map(Number), x = rgbaOf(c); if (x) for (let q = 0; q < 4; q++) val[(j * W + i) * 4 + q] = x[q] ?? 255; }
+  const up = Math.max(2, Math.min(12, Math.floor(720 / Math.max(W, H)))), cw = W * up, ch = H * up;
+  const cv = document.createElement("canvas"); cv.width = cw; cv.height = ch;
+  const ctx = cv.getContext("2d"), im = ctx.createImageData(cw, ch), px = im.data;
+  for (let py = 0; py < ch; py++) {
+    const v = H - 0.5 - (py + 0.5) / up, j = Math.floor(v), fv = v - j;
+    for (let qx = 0; qx < cw; qx++) {
+      const u = (qx + 0.5) / up - 0.5, i = Math.floor(u), fu = u - i, acc = [0, 0, 0, 0];
+      let w = 0;
+      for (const [di, dj, wt] of [[0, 0, (1 - fu) * (1 - fv)], [1, 0, fu * (1 - fv)], [0, 1, (1 - fu) * fv], [1, 1, fu * fv]]) {
+        const ii = i + di, jj = j + dj;
+        if (ii < 0 || jj < 0 || ii >= W || jj >= H || wt <= 0) continue;
+        const o = (jj * W + ii) * 4;
+        if (val[o] !== val[o]) continue;
+        for (let q = 0; q < 4; q++) acc[q] += val[o + q] * wt;
+        w += wt;
+      }
+      if (w < 0.35) continue;
+      const o = (py * cw + qx) * 4;
+      px[o] = acc[0] / w; px[o + 1] = acc[1] / w; px[o + 2] = acc[2] / w; px[o + 3] = acc[3] / w * Math.min(1, w / 0.6);
     }
   }
   ctx.putImageData(im, 0, 0);
@@ -584,7 +621,8 @@ function buildLayers() {
             return [[c[0] - k, c[1] - half], [c[0] + k, c[1] - half], [c[0] + k, c[1] + half], [c[0] - k, c[1] + half]]; },
           getFillColor: color, updateTriggers: { getFillColor: [th.name, m.key, tkey] } }));
       } else if (th.cells_as === "tint") {
-        const bm = m.categorical ? null : tintBitmap(d, [th.name, m.key, tkey].join("|"), (c) => cellValue(d, m, c), (x) => ramp(th.ramps[m.ramp], x));
+        const bm = m.categorical ? tintBitmap(d, [th.name, m.key, tkey, "rgba"].join("|"), (c) => { const k = color(c); return k && k[3] > 0 ? k : [k[0], k[1], k[2], 0]; }, null)
+                                 : tintBitmap(d, [th.name, m.key, tkey].join("|"), (c) => cellValue(d, m, c), (x) => ramp(th.ramps[m.ramp], x));
         if (bm) L.push(new deck.BitmapLayer({ id: lay.id + "-" + m.key + "-t" + tkey, image: bm.img, bounds: bm.bounds, opacity: th.tint?.cells_opacity ?? 1,
           textureParameters: { [10240]: 9729, [10241]: 9729 } }));
         else L.push(new deck.PathLayer({ id: lay.id + "-" + m.key + "-h", data: hatchCells(d, m, color, th, tkey),
@@ -1516,6 +1554,7 @@ function goPlate(id) {
   const sc = sceneById(id);
   if (!sc) { showCover(true); return; }
   if (sc.href) { location.href = sc.href + (lang !== "en" ? `?lang=${lang}` : ""); return; }
+  if ($("back-atlas") && id !== state.scene) { location.href = `index.html?scene=${id}` + (lang !== "en" ? `&lang=${lang}` : ""); return; }
   showCover(false); $("scene").value = id;
   if (id !== state.scene) loadScene(id); else if (state.storyData) storyOpen(true, 0, true);
 }
@@ -1640,10 +1679,11 @@ function applyPage(i, instant) {
   i = Math.max(0, Math.min(n - 1, i));
   const p = S.pages[i]; state.page = i;
   if (state.playing) togglePlay();
-  const want = new Set(p.layers || []);
+  const want = new Set(p.layers || []), base = new Set(state.man.base || []);
   for (const l of state.man.layers) {
     let on = want.has(l.id) || (!!l.group && want.has(l.group));
     if (l.by_theme && !(state.theme.layers_on || []).includes(l.id)) on = false;
+    if (base.has(l.id) && !(p.hide || []).includes(l.id)) on = true;
     state.visible[l.id] = on;
   }
   for (const l of layersOf("cells")) state.mode[l.id] = p.modes?.[l.id] ?? state.data[l.id].default_mode ?? "";
@@ -1666,9 +1706,9 @@ function storyCamera(p, i, instant) {
   const pad = wide ? { top: 64, right: 50, bottom: 24 + Math.max(sh, sec), left: card.right + 36 }
                    : { top: card.bottom + 16, right: 16, bottom: 16 + sh, left: 16 };
   const calm = instant || matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const opt = { padding: pad, duration: calm ? 0 : 2400, essential: true, curve: 1.25 };
+  const opt = { padding: pad, duration: calm ? 0 : 1300, essential: true, linear: true, easing: (t) => t * (2 - t) };
   if (c.bbox) map.fitBounds([[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]], opt);
-  else map.flyTo({ center: c.center, zoom: c.zoom, ...opt });
+  else map.easeTo({ center: c.center, zoom: c.zoom, ...opt });
   if (p.play) map.once("moveend", () => { if (state.storyOn && state.page === i && !state.playing) togglePlay(); });
 }
 
@@ -1709,6 +1749,36 @@ function renderStoryCard() {
     state.moreOpen = !state.moreOpen; renderSheet(); $("st-more").textContent = state.moreOpen ? T("less") : T("more"); };
   renderSheet();
   if (timed) $("st-play").onclick = togglePlay;
+}
+
+// the locator: a small engraved globe in the corner, the plate marked on it, so the reader knows where on Earth this is
+let _world = null;
+async function renderLocator() {
+  const el = $("locator"), man = state.man;
+  if (!el || !man) return;
+  if (!_world) { try { _world = await getJSON("data/world-land.json"); } catch (e) { el.classList.add("hidden"); return; } }
+  const [w, s0, e, n] = man.bbox, lon0 = (w + e) / 2, lat0 = Math.max(-60, Math.min(60, (s0 + n) / 2)), R = 54, C = 60;
+  const rad = Math.PI / 180, sp0 = Math.sin(lat0 * rad), cp0 = Math.cos(lat0 * rad);
+  const proj = ([lon, lat]) => {
+    const l = (lon - lon0) * rad, f = lat * rad, cf = Math.cos(f);
+    let x = cf * Math.sin(l), y = cp0 * Math.sin(f) - sp0 * cf * Math.cos(l);
+    if (sp0 * Math.sin(f) + cp0 * cf * Math.cos(l) < 0) { const k = Math.hypot(x, y) || 1; x /= k; y /= k; }   // far side: onto the rim
+    return [(C + R * x).toFixed(1), (C - R * y).toFixed(1)];
+  };
+  const path = (pts) => "M" + pts.map((q) => proj(q).join(",")).join("L") + "Z";
+  const grat = [];
+  for (let lo = -180; lo < 180; lo += 30) grat.push("M" + Array.from({ length: 37 }, (_, i) => proj([lo, -90 + i * 5]).join(",")).join("L"));
+  for (let la = -60; la <= 60; la += 30) grat.push("M" + Array.from({ length: 73 }, (_, i) => proj([-180 + i * 5, la]).join(",")).join("L"));
+  const ink = state.theme.ink || "#3a2a1c", red = rgba([...(state.theme.velocity?.color || [150, 44, 26]), 255]);
+  const [mx, my] = proj([lon0, (s0 + n) / 2]);
+  el.innerHTML = `<svg viewBox="0 0 120 120" width="120" height="120" aria-label="${label(man.title)}">
+    <defs><clipPath id="loc-c"><circle cx="${C}" cy="${C}" r="${R}"/></clipPath></defs>
+    <circle cx="${C}" cy="${C}" r="${R}" fill="rgba(255,255,255,.18)"/>
+    <g clip-path="url(#loc-c)"><path d="${grat.join("")}" fill="none" stroke="${ink}" stroke-opacity=".22" stroke-width=".5"/>
+    <path d="${_world.rings.map(path).join("")}" fill="${ink}" fill-opacity=".2" stroke="${ink}" stroke-opacity=".7" stroke-width=".6" fill-rule="evenodd"/></g>
+    <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${ink}" stroke-width="1.2"/>
+    <circle cx="${mx}" cy="${my}" r="7" fill="none" stroke="${red}" stroke-width="1.4"/><circle cx="${mx}" cy="${my}" r="2.4" fill="${red}"/></svg>`;
+  el.classList.remove("hidden");
 }
 
 // the detail sheet: a second paper beside the story card, only on request
@@ -1783,7 +1853,7 @@ async function loadScene(id) {
     const n = man.dates.length;
     state.maxDay = n > 1 ? Math.round((new Date(man.dates[n - 1]) - new Date(man.dates[0])) / DAY) : 0;
     $("time").max = state.maxDay;
-    renderPanel();
+    renderPanel(); renderLocator();
     map.setMaxBounds(null);
     const wide = innerWidth > 700, sh = placeScore();               // keep the city clear of the score strip
     map.fitBounds([[man.bbox[0], man.bbox[1]], [man.bbox[2], man.bbox[3]]],

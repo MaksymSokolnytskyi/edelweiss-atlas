@@ -120,16 +120,16 @@
      150,
      62,
      34,
-     210
+     200
     ]
    ],
    [
     0.55,
     [
-     214,
-     170,
-     110,
-     150
+     200,
+     140,
+     90,
+     95
     ]
    ],
    [
@@ -138,7 +138,7 @@
      243,
      238,
      223,
-     30
+     0
     ]
    ],
    [
@@ -147,7 +147,7 @@
      52,
      86,
      128,
-     180
+     170
     ]
    ]
   ],
@@ -593,9 +593,9 @@
    "caps_size": 14,
    "collide": true,
    "label_color": [
-    40,
-    28,
-    18
+    22,
+    14,
+    6
    ],
    "min_rank": [
     12,
@@ -729,7 +729,7 @@
  },
  "label_font": "'EB Garamond', Georgia, serif",
  "label_font_load": "EB Garamond",
- "label_weight": "500",
+ "label_weight": "600",
  "label_bump": 2,
  "overscan": 0,
  "tint": {
@@ -762,7 +762,8 @@
     112
    ]
   ],
-  "cells_opacity": 0.9
+  "cells_opacity": 0.62
  },
- "cells_as": "tint"
+ "cells_as": "tint",
+ "label_halo": 8
 }

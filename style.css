@@ -202,3 +202,9 @@ body[data-theme="scroll"] #sheet { border-style: double; border-width: 3px; }
 
 /* the story card stays put between pages (no slide), so the eye keeps its place */
 #story.turn { animation: none; }
+
+/* the locator globe, bottom right over the map */
+#locator { position: fixed; right: 14px; bottom: 30px; z-index: 3; width: 120px; height: 120px; pointer-events: none;
+           background: var(--panel-bg); border-radius: 50%; box-shadow: 0 0 0 3px var(--panel-bg), 0 0 0 4px var(--panel-border); }
+#locator.hidden { display: none; }
+@media (max-width: 760px) { #locator { width: 84px; height: 84px; bottom: 26px; } #locator svg { width: 84px; height: 84px; } }

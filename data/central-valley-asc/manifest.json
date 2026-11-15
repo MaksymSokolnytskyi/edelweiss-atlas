@@ -89,6 +89,18 @@
    ]
   },
   {
+   "id": "terrain",
+   "kind": "hachures-static",
+   "file": "terrain.geojson",
+   "label": {
+    "en": "Relief",
+    "uk": "Рельєф"
+   },
+   "props": [
+    "dark"
+   ]
+  },
+  {
    "id": "water",
    "kind": "lines",
    "file": "ctx_water.geojson",
@@ -139,6 +151,34 @@
    "visible": true,
    "z": 3.6,
    "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "trees",
+   "kind": "lines",
+   "file": "ctx_trees.geojson",
+   "style": "tree",
+   "label": {
+    "en": "Woods and parks",
+    "uk": "Ліси й парки"
+   },
+   "visible": false,
+   "by_theme": true,
+   "z": 1.25,
+   "attribution": "© ESA WorldCover 2021 (CC-BY 4.0)"
+  },
+  {
+   "id": "built",
+   "kind": "lines",
+   "file": "ctx_built.geojson",
+   "style": "built",
+   "label": {
+    "en": "Built-up land",
+    "uk": "Забудова"
+   },
+   "visible": false,
+   "by_theme": true,
+   "z": 1.1,
+   "attribution": "© ESA WorldCover 2021 (CC-BY 4.0)"
   }
  ],
  "notes": [
@@ -149,5 +189,14 @@
   "en": "the farming year heard by the NISAR radar · {a}–{b}",
   "uk": "рік на полях, почутий радаром NISAR · {a}–{b}"
  },
- "story": "story.json"
+ "story": "story.json",
+ "base": [
+  "terrain",
+  "trees",
+  "built",
+  "water",
+  "rivers",
+  "canals",
+  "places"
+ ]
 }
