@@ -69,6 +69,18 @@
  },
  "layers": [
   {
+   "id": "countries",
+   "kind": "polygons",
+   "file": "ctx_countries.geojson",
+   "style": "country",
+   "z": 0.5,
+   "label": {
+    "en": "Countries",
+    "uk": "Країни"
+   },
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
    "id": "terrain",
    "kind": "hachures-static",
    "file": "terrain.geojson",
@@ -344,6 +356,7 @@
  "story": "story.json",
  "tint_step": 5,
  "base": [
+  "countries",
   "terrain",
   "trees",
   "built",

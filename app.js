@@ -47,7 +47,7 @@ const STR = {
         score_sound_t: "кожен дзвін — ще 2 см опускання: що швидше район сідає, то частіше дзвонить; нерухомі мовчать",
         lg_change: "радар втратив відбиток між двома прольотами (сніг, вода, обвал)", lg_change_event: "пляма, що лишається: селевий потік",
         story_intro: "таблиця", story_what: "що змінилось", story_why: "чому", story_sure: "наскільки певні",
-        story_next: "що ще може NISAR", story_listen: "послухати", story_back: "Назад", story_next_btn: "Далі", questions: "Питання, які можуть виникнути", to_story: "До історії", 
+        story_next: "що ще може NISAR", story_listen: "послухати", story_back: "Назад", story_next_btn: "Далі", narrator: "🔈 Оповідач", narrator_on: "🔊 Оповідач: увімк.", questions: "Питання, які можуть виникнути", to_story: "До історії", 
         story_explore: "досліджувати мапу самому ✕", story_open: "Читати таблицю ▸",
         contents: "☰ Зміст", glossary: "Слова, вжиті в атласі", next_plate: "Наступна таблиця", the_end: "Кінець атласу: до змісту" },
   en: { scene: "Place", theme: "Style", trust: "Trust", trust_fade: "weak strokes faded", trust_strong: "reliable only",
@@ -88,7 +88,7 @@ const STR = {
         score_sound_t: "each chime = 2 more cm of sinking: the faster a district sinks, the more often it chimes; still ground stays silent",
         lg_change: "the radar lost the ground's fingerprint between two passes (snow, water, a slide)", lg_change_event: "the patch that stays: the debris flow",
         story_intro: "plate", story_what: "what changed", story_why: "why", story_sure: "how sure",
-        story_next: "what else NISAR can do", story_listen: "listen", story_back: "Back", story_next_btn: "Next", questions: "Questions you may have", to_story: "To the story", 
+        story_next: "what else NISAR can do", story_listen: "listen", story_back: "Back", story_next_btn: "Next", narrator: "🔈 Narrator", narrator_on: "🔊 Narrator: on", questions: "Questions you may have", to_story: "To the story", 
         story_explore: "explore the map yourself ✕", story_open: "Read the plate ▸",
         contents: "☰ Contents", glossary: "Words used in the atlas", next_plate: "Next plate", the_end: "End of the atlas: back to the contents" },
 };
@@ -100,7 +100,7 @@ const $ = (id) => document.getElementById(id);
 const getJSON = (u) => fetch(u, { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error(u + " " + r.status); return r.json(); });
 const DAY = 86400000;
 
-const state = { scene: null, theme: null, man: null, data: {}, visible: {}, mode: {}, day: 0, maxDay: 1, playing: false,
+const state = { narrate: q.get("narrate") === "1", scene: null, theme: null, man: null, data: {}, visible: {}, mode: {}, day: 0, maxDay: 1, playing: false,
                 trust: "fade", point: null, section: null, pending: null, secBase: null, scanKm: 0, secMode: "cut", open: {},
                 sound: q.get("sound") === "1", scoreHover: null, scorePin: null, bells: {},
                 storyData: null, storyOn: false, page: 0, marks: [] };
@@ -684,7 +684,7 @@ function buildLayers() {
       const s = (th.polygons || {})[lay.style] || { fill: [0, 0, 0, 40], line: [0, 0, 0, 255], width: 1 };
       L.push(new deck.GeoJsonLayer({ id: lay.id, data: d, filled: true, stroked: true, pointType: "circle",
         lineWidthUnits: "pixels", pointRadiusUnits: "pixels", getPointRadius: 5,
-        getFillColor: (f) => (f.geometry.type === "Point" ? s.point || s.line : s.fill),
+        getFillColor: (f) => (f.geometry.type === "Point" ? s.point || s.line : s.fills?.[f.properties.tone] ?? s.fill),
         getLineColor: s.line,
         getLineWidth: (f) => (f.properties.part === "top_edge" ? s.edge_width || s.width * 2 : s.width),
         updateTriggers: { getFillColor: th.name, getLineColor: th.name, getLineWidth: th.name } }));
@@ -693,8 +693,8 @@ function buildLayers() {
       const k = state.focus.k;
       for (let j = from; j < L.length; j++) if (!(L[j] instanceof deck.TextLayer)) {
         const pr = L[j].props, w0 = pr.widthScale ?? pr.lineWidthScale ?? 1;
-        L[j] = L[j].clone({ id: L[j].id + "-pulse", widthScale: w0 * (1 + 2.2 * k), lineWidthScale: (pr.lineWidthScale ?? 1) * (1 + 2.2 * k),
-                             widthMinPixels: 1 + 2 * k, opacity: Math.min(1, (pr.opacity ?? 1) + k) });
+        L[j] = L[j].clone({ id: L[j].id + "-pulse", widthScale: w0 * (1 + 4 * k), lineWidthScale: (pr.lineWidthScale ?? 1) * (1 + 4 * k),
+                             widthMinPixels: 1 + 4 * k, opacity: Math.min(1, (pr.opacity ?? 1) + k) });
       }
       continue;                                                  // a focused layer is never quietened
     }
@@ -1589,8 +1589,9 @@ const coverOn = () => !$("cover").classList.contains("hidden");
 function goPlate(id) {
   const sc = sceneById(id);
   if (!sc) { showCover(true); return; }
-  if (sc.href) { location.href = sc.href + (lang !== "en" ? `?lang=${lang}` : ""); return; }
-  if ($("back-atlas") && id !== state.scene) { location.href = `index.html?scene=${id}` + (lang !== "en" ? `&lang=${lang}` : ""); return; }
+  const nar = state.narrate ? "narrate=1" : "";
+  if (sc.href) { location.href = sc.href + "?" + [lang !== "en" ? `lang=${lang}` : "", nar].filter(Boolean).join("&"); return; }
+  if ($("back-atlas") && id !== state.scene) { location.href = `index.html?scene=${id}` + (lang !== "en" ? `&lang=${lang}` : "") + (nar ? "&" + nar : ""); return; }
   showCover(false); $("scene").value = id;
   if (id !== state.scene) loadScene(id); else if (state.storyData) storyOpen(true, 0, true);
 }
@@ -1733,6 +1734,34 @@ function applyPage(i, instant) {
   renderLegend(); renderStoryCard(); syncTimebox(); renderSection(); renderScore(); setDay(day);
   storyCamera(p, i, instant);
   drawNotes(); setParam("page", i + 1);
+  clearTimeout(state.narrTimer); if ("speechSynthesis" in window) speechSynthesis.cancel();
+  if (state.narrate) state.narrTimer = setTimeout(() => narrate(i), instant ? 300 : 1500);
+}
+
+function pickVoice() {
+  const vs = speechSynthesis.getVoices(), want = lang === "uk" ? "uk" : "en";
+  const pref = want === "uk" ? [/Ostap/i, /Polina/i] : [/Ryan.*Natural/i, /Thomas.*Natural/i, /George/i, /UK English Male/i, /Daniel/i, /en-GB/i];
+  for (const r of pref) { const v = vs.find((x) => (r.test(x.name) || r.test(x.lang)) && x.lang.toLowerCase().startsWith(want)); if (v) return v; }
+  return vs.find((x) => x.lang.toLowerCase().startsWith(want)) || null;
+}
+
+function narrate(i) {
+  if (!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const p = state.storyData?.pages[i];
+  if (!state.narrate || !p || !state.storyOn || state.page !== i) return;
+  const next = () => {                                   // wait for the year to finish playing, then turn the page
+    if (!state.narrate || state.page !== i || !state.storyOn) return;
+    if (state.playing) { state.narrTimer = setTimeout(next, 400); return; }
+    state.narrTimer = setTimeout(() => { if (state.narrate && state.page === i) $("st-next")?.click(); }, 1600);
+  };
+  if (!p.voice) { state.narrTimer = setTimeout(next, 6000); return; }
+  const u = new SpeechSynthesisUtterance(label(p.voice)), v = pickVoice();
+  if (v) u.voice = v;
+  u.lang = v?.lang || (lang === "uk" ? "uk-UA" : "en-GB"); u.rate = 0.88; u.pitch = 0.9;
+  u.onend = next;
+  u.onerror = (e) => { if (e.error === "not-allowed") addEventListener("pointerdown", () => narrate(state.page), { once: true }); };
+  speechSynthesis.speak(u);
 }
 
 // the layers a page names in "focus" swell and fade three times (about 2.4 s), so the eye finds them before the text
@@ -1760,8 +1789,9 @@ function storyCamera(p, i, instant) {
   const opt = { padding: pad, duration: calm ? 0 : 1300, essential: true, linear: true, easing: (t) => t * (2 - t) };
   if (c.bbox) map.fitBounds([[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]], opt);
   else map.easeTo({ center: c.center, zoom: c.zoom, ...opt });
-  if (p.play) map.once("moveend", () => { if (state.storyOn && state.page === i && !state.playing) togglePlay(); });
-  if (p.focus) map.once("moveend", () => { if (state.storyOn && state.page === i) pulse(p.focus, i); });
+  const at = instant ? 250 : 1450;
+  if (p.play) setTimeout(() => { if (state.storyOn && state.page === i && !state.playing) togglePlay(); }, at);
+  if (p.focus) setTimeout(() => { if (state.storyOn && state.page === i) pulse(p.focus, i); }, at);
 }
 
 // pages marked "appendix" stay out of the reading order: the story runs through the others, and its last page offers
@@ -1799,7 +1829,8 @@ function renderStoryCard() {
     (timed ? `<div class="st-time"><button id="st-play">${state.playing ? "❚❚" : "▶"}</button><span id="st-date"></span></div>` : "") + questions + onward +
     `<nav><button id="st-prev"${stepPage(i, -1) != null ? "" : " disabled"}>← ${T(p.appendix ? "to_story" : "story_back")}</button><span class="tabs">${tabs}</span>` +
     `<button id="st-next"${stepPage(i, 1) != null || onward ? "" : " disabled"}>${T("story_next_btn")} →</button></nav>` +
-    `<div class="st-foot"><a href="#" id="st-explore">${T("story_explore")}</a></div>`;
+    `<div class="st-foot"><a href="#" id="st-voice" class="${state.narrate ? "on" : ""}">${T(state.narrate ? "narrator_on" : "narrator")}</a>` +
+    `<a href="#" id="st-explore">${T("story_explore")}</a></div>`;
   box.classList.remove("turn"); void box.offsetWidth; box.classList.add("turn");      // a short page-turn
   $("st-prev").onclick = () => applyPage(stepPage(i, -1));
   $("st-next").onclick = () => (last ? goPlate(nextId) : stepPage(i, 1) != null && applyPage(stepPage(i, 1)));
@@ -1813,6 +1844,9 @@ function renderStoryCard() {
     state.moreOpen = !state.moreOpen; renderSheet(); $("st-more").textContent = state.moreOpen ? T("less") : T("more"); };
   renderSheet();
   if (timed) $("st-play").onclick = togglePlay;
+  $("st-voice").onclick = (e) => { e.preventDefault(); state.narrate = !state.narrate; clearTimeout(state.narrTimer);
+    if (state.narrate) narrate(state.page); else if ("speechSynthesis" in window) speechSynthesis.cancel();
+    renderStoryCard(); };
 }
 
 // the locator: a small engraved globe in the corner, the plate marked on it, so the reader knows where on Earth this is
@@ -1870,7 +1904,11 @@ const SIGNS = {
   frost: "M0,-12V12M-10.4,-6L10.4,6M-10.4,6L10.4,-6M-3,-9L0,-6L3,-9M-3,9L0,6L3,9M-8,-1L-5,-3M8,1L5,3M-8,1L-5,3M8,-1L5,-3",
   field: "M-12,6L-4,-8H12L4,6ZM-9,4L-2,-6M-5,4L2,-6M-1,4L6,-6M3,4L10,-6",
   lake: "M-12,-4C-8,-7 -4,-1 0,-4C4,-7 8,-1 12,-4M-12,2C-8,-1 -4,5 0,2C4,-1 8,5 12,2M-9,8C-6,5 -3,11 0,8C3,5 6,11 9,8",
+  swamp: "M0,5V-2M-6,-2L0,-13L6,-2ZM-4,-7H4M-12,9H-5M-2,9H5M8,9H12M-9,13H-2M2,13H10M-8,9V6M-10,9V7M6,9V6M9,9V7",
 };
+// a yearly curve as a sign: x = the year (left winter, right autumn), y = how steady (up = steady); one scale for all marks
+const curveSign = (v, lo = 0.35, hi = 1.05) => "M-12,12H12M-12,12V-12" +
+  "M" + v.map((y, j) => `${(-12 + 24 * j / (v.length - 1)).toFixed(1)},${(10 - 20 * (y - lo) / (hi - lo)).toFixed(1)}`).join("L");
 
 function drawNotes() {             // engraved call-outs: a ring on the place, a leader line, an italic note
   const svg = $("notes"), marks = state.storyOn ? state.marks || [] : [];
@@ -1881,12 +1919,13 @@ function drawNotes() {             // engraved call-outs: a ring on the place, a
   let s = "";
   for (const m of marks) {
     const P = map.project([m.lon, m.lat]), dx = m.dx ?? 30, dy = m.dy ?? -24, x = P.x + dx, y = P.y + dy;
-    const sign = SIGNS[m.icon], gap = sign ? 34 : 4, end = dx < 0 ? "end" : "start", tx = x + (dx < 0 ? -gap : gap);
+    const sign = m.curve ? curveSign(m.curve) : SIGNS[m.icon], gap = sign ? 34 : 4, end = dx < 0 ? "end" : "start", tx = x + (dx < 0 ? -gap : gap);
     // the place is ringed in ink: a ground radius (r_m) gives an ink loop around the area the page talks about
     const mpp = 40075016.7 * Math.cos(m.lat * Math.PI / 180) / (512 * 2 ** map.getZoom()), rr = m.r_m ? Math.max(9, m.r_m / mpp) : 4.5;
     s += `<circle cx="${P.x}" cy="${P.y}" r="${rr}" fill="none" stroke="${ink}" stroke-width="${m.r_m ? 1.6 : 1.3}"${m.r_m ? ' stroke-dasharray="7 3 1.5 3"' : ""}/>` +
          `<line x1="${P.x + (dx > 0 ? 1 : -1) * rr * 0.7}" y1="${P.y + (dy > 0 ? 1 : -1) * rr * 0.7}" x2="${x}" y2="${y}" stroke="${ink}" stroke-width="0.8"/>` +
          (sign ? `<g transform="translate(${x + (dx < 0 ? -17 : 17)},${y})"><circle r="16" fill="${paper}" fill-opacity=".85" stroke="${ink}" stroke-width=".7"/>` +
+                 (m.color ? `<circle r="15.3" fill="rgb(${m.color})" fill-opacity=".38"/>` : "") +
                  `<path d="${sign}" fill="none" stroke="${ink}" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" transform="scale(.95)"/></g>` : "") +
          `<text x="${tx}" y="${y + 4}" text-anchor="${end}" class="nt">${label(m.text)}</text>`;
   }

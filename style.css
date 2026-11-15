@@ -212,3 +212,7 @@ body[data-theme="scroll"] #sheet { border-style: double; border-width: 3px; }
 /* questions after the story: the appendix pages, offered on the last page */
 #story .st-questions { margin: 10px 0 2px; font-size: 14.5px; color: var(--muted); }
 #story .st-questions a { color: var(--ink); }
+
+/* the narrator switch, beside "explore the map yourself" */
+#story .st-foot { display: flex; justify-content: space-between; gap: 12px; }
+#story #st-voice.on { color: var(--ink); font-weight: 600; }
