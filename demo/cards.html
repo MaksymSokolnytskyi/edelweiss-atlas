@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edelweiss demo cards</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IM+Fell+English:ital@0;1&display=swap">
+<style>
+  /* the title and closing cards of the demo video, in the atlas's own type (scripts/make_demo.py screenshots them) */
+  html, body { margin: 0; height: 100%; background: #efe6d2; color: #281c12; }
+  .card { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .card.on { display: flex; }
+  h1 { font: 400 96px/1 'IM Fell English', Georgia, serif; letter-spacing: .32em; margin: 0 0 18px; padding-left: .32em; }
+  .sub { font: italic 400 44px/1.2 'IM Fell English', Georgia, serif; margin: 0 0 34px; }
+  .note { font: 400 26px/1.5 'EB Garamond', Georgia, serif; color: #6e5c46; }
+  .say { font: italic 400 50px/1.25 'IM Fell English', Georgia, serif; margin: 0 0 30px; }
+  .url { font: 400 32px/1.4 'EB Garamond', Georgia, serif; color: #963424; margin: 0 0 30px; }
+  .team { font: 400 27px/1.6 'EB Garamond', Georgia, serif; max-width: 1100px; }
+  .small { font: 400 18px/1.4 'EB Garamond', Georgia, serif; color: #6e5c46; margin-top: 34px; }
+  .rule { width: 220px; border-top: 1px solid #281c12; margin: 6px auto 30px; }
+</style></head>
+<body>
+<div class="card" id="title">
+  <h1>EDELWEISS</h1>
+  <div class="sub">an atlas of the moving ground</div>
+  <div class="rule"></div>
+  <div class="note">drawn from NISAR, the NASA–ISRO L-band radar · every 12 days<br>NASA Space Apps Challenge 2026 · Dancing with the SARs</div>
+</div>
+<div class="card" id="end">
+  <div class="say">Every plate tells its story,<br>and says how sure it is.</div>
+  <div class="url">maksymsokolnytskyi.github.io/edelweiss-atlas</div>
+  <div class="rule"></div>
+  <div class="team">Team Edelweiss, Ukraine<br>Andrii Bilych · Oleh Paziuka · Maksym Sokolnytskyi<br>Yehor Matiiash · Illia Bondar · Yelyzaveta Razumovska</div>
+  <div class="small">Narration: synthetic voice; script drafted with AI (Claude) and checked by the team · Dufour map © swisstopo</div>
+</div>
+<script>
+  const id = new URLSearchParams(location.search).get("card") || "title";
+  document.getElementById(id).classList.add("on");
+</script>
+</body></html>

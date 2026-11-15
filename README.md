@@ -14,6 +14,8 @@ This repository only holds the built web pages. It is published from the team's 
 - ESA WorldCover 10 m 2021 (CC BY 4.0): © ESA WorldCover project / contains modified Copernicus Sentinel data (2021).
 - OpenStreetMap (ODbL): © OpenStreetMap contributors.
 - Natural Earth 1:110m land (public domain), for the locator globe; via the world-atlas package (ISC).
+- Dufour map sample in the demo video (web/demo/, built by scripts/make_demo.py): © swisstopo. The demo narration is
+  the Windows speech synthesizer reading a script drafted with AI (Claude) and checked by the team.
 - Mexico City context (lakebed zone, mapped cracks): Atlas de Riesgos de la Ciudad de México.
 - GNSS station series (Mexico, Reykjanes): Nevada Geodetic Laboratory.
 - Kakhovka, Wisconsin and Bakota tests (`notes/experiments.md`, sections K, W, WS and B): contains modified Copernicus Sentinel-2 data
