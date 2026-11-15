@@ -117,10 +117,10 @@
    [
     0.2,
     [
-     168,
-     50,
-     42,
-     200
+     150,
+     62,
+     34,
+     210
     ]
    ],
    [
@@ -138,16 +138,16 @@
      243,
      238,
      223,
-     40
+     30
     ]
    ],
    [
     1.15,
     [
-     70,
-     100,
-     80,
-     170
+     52,
+     86,
+     128,
+     180
     ]
    ]
   ],
@@ -428,6 +428,69 @@
   "label_size": 13
  },
  "lines": {
+  "bowl": {
+   "color": [
+    52,
+    38,
+    26
+   ],
+   "alpha": 245,
+   "width": 1.7,
+   "label_size": 12,
+   "legend": true
+  },
+  "bowl_candidate": {
+   "color": [
+    52,
+    38,
+    26
+   ],
+   "alpha": 180,
+   "width": 1.1,
+   "dash": [
+    1.5,
+    3
+   ],
+   "label_size": 10,
+   "legend": true
+  },
+  "heap": {
+   "color": [
+    58,
+    42,
+    28
+   ],
+   "alpha": 170,
+   "width": 0.8,
+   "dash": [
+    1,
+    2
+   ]
+  },
+  "border": {
+   "color": [
+    58,
+    42,
+    28
+   ],
+   "alpha": 200,
+   "width": 1.6,
+   "dash": [
+    8,
+    3,
+    1,
+    3
+   ]
+  },
+  "road": {
+   "color": [
+    58,
+    42,
+    28
+   ],
+   "alpha": 150,
+   "width": 1.0
+  },
   "water_ghost": {
    "color": [
     64,
@@ -524,11 +587,20 @@
    "label_size": 13,
    "label_bold": false,
    "legend": false,
-   "italic": true,
-   "spaced": true,
+   "italic": false,
+   "spaced": false,
    "caps_rank": 3,
    "caps_size": 14,
-   "collide": true
+   "collide": true,
+   "label_color": [
+    40,
+    28,
+    18
+   ],
+   "min_rank": [
+    12,
+    2
+   ]
   },
   "station": {
    "color": [
@@ -622,36 +694,6 @@
     2
    ]
   },
-  "bowl": {
-   "color": [
-    52,
-    38,
-    26
-   ],
-   "alpha": 240,
-   "width": 1.6,
-   "dash": [
-    6,
-    3
-   ],
-   "label_size": 11,
-   "legend": true
-  },
-  "bowl_candidate": {
-   "color": [
-    52,
-    38,
-    26
-   ],
-   "alpha": 170,
-   "width": 1.1,
-   "dash": [
-    1.5,
-    3
-   ],
-   "label_size": 9,
-   "legend": true
-  },
   "coast": {
    "color": [
     64,
@@ -678,11 +720,49 @@
   "blocks"
  ],
  "font_body": "'EB Garamond', Georgia, serif",
- "quiet": 0.45,
+ "quiet": 0.65,
  "hatch": {
   "max": 6,
   "w": 1.0,
   "min": 0.3,
   "ink": 0.35
- }
+ },
+ "label_font": "'EB Garamond', Georgia, serif",
+ "label_font_load": "EB Garamond",
+ "label_weight": "500",
+ "label_bump": 2,
+ "overscan": 0,
+ "tint": {
+  "step": 10,
+  "alpha": [
+   100,
+   215
+  ],
+  "down": [
+   [
+    228,
+    200,
+    156
+   ],
+   [
+    118,
+    68,
+    34
+   ]
+  ],
+  "up": [
+   [
+    192,
+    208,
+    216
+   ],
+   [
+    52,
+    84,
+    112
+   ]
+  ],
+  "cells_opacity": 0.9
+ },
+ "cells_as": "tint"
 }

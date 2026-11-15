@@ -25,5 +25,9 @@ This repository only holds the built web pages. It is published from the team's 
   2024, Science 383:1228 (doi 10.1126/science.adn2838).
 - Ostrava–Karviná study (`scripts/ostrava/`): NISAR L2 GUNW PROVISIONAL (NASA/JPL and ISRO, ASF DAAC); OpenStreetMap
   (ODbL) via the Overpass API and osmnx.
+- Ostrava–Karviná EGMS check (`scripts/ostrava/egms_o3b.py`): European Ground Motion Service, L3 Ortho 2019–2023,
+  © European Union, Copernicus Land Monitoring Service, European Environment Agency (EEA).
+- Ostrava–Karviná plate (`sites/ostrava-karvina-asc.json`): the same NISAR, Copernicus DEM, ESA WorldCover and
+  OpenStreetMap sources as above, plus the study's bowl outlines.
 
 NASA does not endorse any non-U.S. Government entity. Each non-NASA source is used under its own terms.

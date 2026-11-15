@@ -199,3 +199,6 @@ body[data-theme="scroll"] #sheet { border-style: double; border-width: 3px; }
 #cover .cv-alpha li span { display: inline; font-size: 14px; }
 #cover .cv-alpha p { text-align: center; margin: 6px 0 0; }
 #cover .cv-intro, #cover li span, #cover footer, #cover .cv-kicker { color: #4f3d2a; }
+
+/* the story card stays put between pages (no slide), so the eye keeps its place */
+#story.turn { animation: none; }

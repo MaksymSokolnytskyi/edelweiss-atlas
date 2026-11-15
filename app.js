@@ -37,7 +37,8 @@ const STR = {
         cm: "см", cm_yr: "см/рік", lg_wedge: "клин: товстий кінець вище, тонкий вказує, куди земля опускається більше",
         lg_wedge_drop: "крапля: тонкий хвіст вище, товста голівка там, куди земля опускається більше",
         lg_solid: "суцільний: сигнал надійний (≥ 3σ)", lg_dashed: "пунктир: сигнал слабкий (1–3σ)",
-        lg_dense: "густі штрихи: земля прогинається найкрутіше", lg_contour: "лінії глибини кожні {s} см від першої дати",
+        lg_dense: "густі штрихи: земля прогинається найкрутіше", lg_contour: "лінії глибини кожні {s} см від першої дати", lg_tint_down: "опустилась від першої дати: темніше = глибше",
+        lg_tint_up: "піднялась від першої дати: темніше = вище",
         headline: "Де ми певні, що тоне найшвидше: <b>{r} ± {s} см/рік</b> (щонайменше {b}). 1% площі опускається швидше за {p} см/рік",
         lg_up: "синій: земля піднімається",
         score_note: "клин = опускання району за 12 днів · угорі найшвидші, внизу нерухомі",
@@ -77,7 +78,8 @@ const STR = {
         cm: "cm", cm_yr: "cm/yr", lg_wedge: "wedge: thick end is higher, thin end points to where the ground sinks more",
         lg_wedge_drop: "drop: thin tail is higher, the thick head sits where the ground sinks more",
         lg_solid: "solid: reliable signal (≥ 3σ)", lg_dashed: "dashed: weak signal (1–3σ)",
-        lg_dense: "dense strokes: the ground bends most steeply", lg_contour: "depth lines every {s} cm since the first date",
+        lg_dense: "dense strokes: the ground bends most steeply", lg_contour: "depth lines every {s} cm since the first date", lg_tint_down: "sunk since the first date: darker = deeper",
+        lg_tint_up: "risen since the first date: darker = higher",
         headline: "Where we are sure it sinks fastest: <b>{r} ± {s} cm/yr</b> (at least {b}). 1% of the area sinks faster than {p} cm/yr",
         lg_up: "blue: the ground rises",
         score_note: "wedge = how far the district went down in 12 days · fastest on top, still at the bottom",
@@ -186,8 +188,8 @@ function textLayer(id, data, th, o) {
   const chars = o.chars === "auto" ? "auto" :                 // deck collects the glyphs from the data itself
     "0123456789+-−±.,/ смcmрікyrСМABCDEFGHIJKLMNOPQRSTUVWXYZ";
   return new deck.TextLayer({ id, data, getPosition: (x) => x.p, getText: (x) => x.s, getAngle: (x) => x.a,
-    getSize: o.size || 11, sizeUnits: "pixels", getColor: o.color || [0, 0, 0, 255], fontFamily: th.font,
-    fontWeight: (o.italic ? "italic " : "") + (o.bold ? "bold" : "normal"), getPixelOffset: o.offset || [0, 0],
+    getSize: (o.size || 11) + (th.label_bump ?? 0), sizeUnits: "pixels", getColor: o.color || [0, 0, 0, 255], fontFamily: th.label_font || th.font,
+    fontWeight: (o.italic ? "italic " : "") + (o.bold ? "bold" : th.label_weight || "normal"), getPixelOffset: o.offset || [0, 0],
     characterSet: chars, fontSettings: { sdf: true, buffer: 8, radius: 14 }, outlineWidth: o.halo || o.bold ? 6 : 0,
     outlineColor: [...(th.paper_rgb || [255, 255, 255]), 255], billboard: true });
 }
@@ -299,7 +301,8 @@ function linesLayers(lay, d, th) {
     if (s.spaced) x = x.split(" ").map((w) => [...w].join("\u2009")).join("\u2002\u2002");
     return x;
   };
-  const pts = d.features.filter((f) => f.geometry.type === "Point" && f.properties.name)
+  const small = s.min_rank && map && map.getZoom() < s.min_rank[0] ? s.min_rank[1] : 0;   // villages only when zoomed in
+  const pts = d.features.filter((f) => f.geometry.type === "Point" && f.properties.name && (f.properties.rank ?? 1) >= small)
     .map((f) => ({ p: f.geometry.coordinates, s: letter(f.properties.name, f.properties.rank ?? 1), a: 0, r: f.properties.rank ?? 1 }));
   if (pts.length && s.collide && map) declutter(pts, s);
   if (pts.length) {
@@ -307,7 +310,7 @@ function linesLayers(lay, d, th) {
     for (const r of [...new Set(pts.map((x) => x.r))]) {
       out.push(textLayer(`${lay.id}-lab-${r}`, pts.filter((x) => x.r === r), th,
         { size: s.caps_rank && r >= s.caps_rank ? (s.caps_size || 13) : (s.label_size || 11) + (r - 1) * 2,
-          color: [...lc, r >= 2 ? 255 : 190], halo: true, chars: "auto",
+          color: [...lc, r >= 2 ? 255 : 225], halo: true, chars: "auto",
           bold: s.label_bold && r >= 3, italic: s.italic && !(s.caps_rank && r >= s.caps_rank) }));
     }
   }
@@ -413,6 +416,67 @@ function hatchGrid(d) {
   for (const c of d.cells) g.at.set(Math.round((c[0] - g.x0) / g.dx) + "," + Math.round((c[1] - g.y0) / g.dy), c);
   return (d._grid = g);
 }
+// a smooth wash of tone from the block values: bilinear between block centres, drawn once per date into a bitmap
+const _tintCache = new WeakMap();
+function tintBitmap(d, key, valueOf, colorOf) {
+  let byKey = _tintCache.get(d);
+  if (!byKey) { byKey = new Map(); _tintCache.set(d, byKey); }
+  if (byKey.has(key)) return byKey.get(key);
+  const g = hatchGrid(d);
+  if (!g.nx) return null;
+  const W = g.nx + 1, H = g.ny + 1, val = new Float32Array(W * H).fill(NaN);
+  for (const [k, c] of g.at) { const [i, j] = k.split(",").map(Number), x = valueOf(c); if (x != null && isFinite(x)) val[j * W + i] = x; }
+  const up = Math.max(2, Math.min(10, Math.floor(720 / Math.max(W, H)))), cw = W * up, ch = H * up;
+  const cv = document.createElement("canvas"); cv.width = cw; cv.height = ch;
+  const ctx = cv.getContext("2d"), im = ctx.createImageData(cw, ch), px = im.data;
+  const at = (i, j) => (i < 0 || j < 0 || i >= W || j >= H ? NaN : val[j * W + i]);
+  for (let py = 0; py < ch; py++) {
+    const v = H - 0.5 - (py + 0.5) / up, j = Math.floor(v), fv = v - j;
+    for (let qx = 0; qx < cw; qx++) {
+      const u = (qx + 0.5) / up - 0.5, i = Math.floor(u), fu = u - i;
+      let sum = 0, w = 0, x, wt;
+      x = at(i, j); wt = (1 - fu) * (1 - fv); if (x === x) { sum += x * wt; w += wt; }
+      x = at(i + 1, j); wt = fu * (1 - fv); if (x === x) { sum += x * wt; w += wt; }
+      x = at(i, j + 1); wt = (1 - fu) * fv; if (x === x) { sum += x * wt; w += wt; }
+      x = at(i + 1, j + 1); wt = fu * fv; if (x === x) { sum += x * wt; w += wt; }
+      if (w < 0.35) continue;                                   // the wash ends half a block past the last block
+      const k = colorOf(sum / w);
+      if (!k || !(k[3] > 0)) continue;
+      const o = (py * cw + qx) * 4; px[o] = k[0]; px[o + 1] = k[1]; px[o + 2] = k[2]; px[o + 3] = k[3];
+    }
+  }
+  ctx.putImageData(im, 0, 0);
+  const out = { img: cv, bounds: [g.x0 - 0.5 * g.dx, g.y0 - 0.5 * g.dy, g.x0 + (g.nx + 0.5) * g.dx, g.y0 + (g.ny + 0.5) * g.dy] };
+  if (byKey.size > 12) byKey.clear();
+  byKey.set(key, out);
+  return out;
+}
+
+// how far the ground has moved since the first date, as layer tints: one tone per band, darker = further; down in
+// umber, up in slate (two hues apart in lightness too, so they part for colour-blind readers as well)
+function depthTint(th) {
+  const man = state.man, T0 = th.tint;
+  if (!T0 || !layersOf("hachures-time").some((l) => state.visible[l.id])) return null;
+  const gl = man.layers.find((l) => l.kind === "cells" && state.data[l.id]?.series === "cum_cm" && state.data[l.id].columns);
+  if (!gl) return null;
+  const d = state.data[gl.id], ci = d.columns.indexOf("cum_cm"), k = seriesIndex(d), step = tintStep(th);
+  if (ci < 0 || k < 0) return null;
+  if (d._depthMax == null) {                                    // the darkest band at the deepest 1 % of the last date, not one stray block
+    const last = d.cells.map((c) => Math.abs(c[ci]?.at(-1)) || 0).sort((x, y) => x - y);
+    d._depthMax = Math.max(step, last[Math.floor(last.length * 0.99)] || 0);
+  }
+  const K = Math.max(1, Math.round(d._depthMax / step)), [a0, a1] = T0.alpha || [60, 170];
+  const tone = (pair, b) => { const t = b / Math.max(K, 4);         // few bands stay mid-tone, so the strokes still show on them
+    return [...pair[0].map((x, i) => Math.round(x + (pair[1][i] - x) * t)), Math.round(a0 + (a1 - a0) * t)]; };
+  const cache = {};
+  const colorOf = (x) => { const b = Math.min(K, Math.floor(Math.abs(x) / step)); if (b < 1) return null;
+    const key = (x < 0 ? -b : b); return cache[key] || (cache[key] = tone(x < 0 ? T0.down : T0.up, b)); };
+  const bm = tintBitmap(d, ["depth", th.name, k, step].join("|"), (c) => c[ci]?.[k], colorOf);
+  return bm && new deck.BitmapLayer({ id: "depth-tint-" + k, image: bm.img, bounds: bm.bounds,
+    textureParameters: { [10240]: 9729, [10241]: 9729 } });
+}
+const tintStep = (th) => state.man?.tint_step ?? th.tint?.step ?? 10;
+
 function hatchCells(d, m, color, th, tkey) {
   const key = [th.name, m.key, tkey].join("|");
   let byKey = _hatchCache.get(d);
@@ -462,6 +526,8 @@ function buildLayers() {
   const zOf = (l) => l.z ?? order[l.kind] ?? 2;
   const story = man.layers.some((l) => state.visible[l.id] && (l.kind === "hachures-time" || l.kind === "cells"));
   const quiet = story ? th.quiet ?? 0.5 : 1;
+  const tint = depthTint(th);
+  if (tint) L.push(tint);
   for (const lay of [...man.layers].sort((a, b) => zOf(a) - zOf(b))) {
     if (!state.visible[lay.id]) continue;
     const d = state.data[lay.id];
@@ -493,11 +559,12 @@ function buildLayers() {
       }
     } else if (lay.kind === "contours") {
       const c = th.contours || { color: [0, 0, 0], alpha: 140, w: 0.5, w_major: 1, label_size: 11 };
-      const di = dateIndex(), lines = d.features.filter((f) => f.properties.d === di);
+      const di = dateIndex(), stepC = th.tint && tint ? tintStep(th) : 0;
+      const lines = d.features.filter((f) => f.properties.d === di && (!stepC || Math.abs(f.properties.level_cm) % stepC === 0));
       L.push(new deck.PathLayer({ id: lay.id + "-" + di, data: lines, widthUnits: "pixels",
         getPath: (f) => f.geometry.coordinates, getColor: [...c.color, c.alpha],
-        getWidth: (f) => (f.properties.major ? c.w_major : c.w) }));
-      const labels = lines.filter((f) => f.properties.major && f.geometry.coordinates.length >= 12).map((f) => {
+        getWidth: (f) => (f.properties.major || stepC ? c.w_major : c.w) }));
+      const labels = lines.filter((f) => (f.properties.major || stepC) && f.geometry.coordinates.length >= 12).map((f) => {
         const q = f.geometry.coordinates, m = Math.floor(q.length / 2), a = q[m - 2], b = q[m + 2];
         let ang = Math.atan2(b[1] - a[1], (b[0] - a[0]) * Math.cos(q[m][1] * Math.PI / 180)) * 180 / Math.PI;
         if (ang > 90) ang -= 180; if (ang < -90) ang += 180;
@@ -516,6 +583,13 @@ function buildLayers() {
           getPolygon: (c) => { const k = half / Math.cos(c[1] * Math.PI / 180);
             return [[c[0] - k, c[1] - half], [c[0] + k, c[1] - half], [c[0] + k, c[1] + half], [c[0] - k, c[1] + half]]; },
           getFillColor: color, updateTriggers: { getFillColor: [th.name, m.key, tkey] } }));
+      } else if (th.cells_as === "tint") {
+        const bm = m.categorical ? null : tintBitmap(d, [th.name, m.key, tkey].join("|"), (c) => cellValue(d, m, c), (x) => ramp(th.ramps[m.ramp], x));
+        if (bm) L.push(new deck.BitmapLayer({ id: lay.id + "-" + m.key + "-t" + tkey, image: bm.img, bounds: bm.bounds, opacity: th.tint?.cells_opacity ?? 1,
+          textureParameters: { [10240]: 9729, [10241]: 9729 } }));
+        else L.push(new deck.PathLayer({ id: lay.id + "-" + m.key + "-h", data: hatchCells(d, m, color, th, tkey),
+          widthUnits: "pixels", capRounded: true, getPath: (h) => h.p, getColor: (h) => h.c, getWidth: (h) => h.w,
+          updateTriggers: { getColor: [th.name, m.key, tkey] } }));
       } else if (th.cells_as !== "dots") {
         L.push(new deck.PathLayer({ id: lay.id + "-" + m.key + "-h", data: hatchCells(d, m, color, th, tkey),
           widthUnits: "pixels", capRounded: true, getPath: (h) => h.p, getColor: (h) => h.c, getWidth: (h) => h.w,
@@ -661,10 +735,18 @@ function renderLegend() {
       <div class="legend-item"><span class="swatch" style="border-top:1px dotted ${th.muted}"></span>${T("hidden")}</div>
       <div class="small">${T("lg_dense")} · ${T("stroke").replace("{b}", st.band_cm ?? "?")}</div>`);
   }
+  const tintOn = th.tint && layersOf("hachures-time").some((l) => state.visible[l.id]) &&
+    man.layers.some((l) => l.kind === "cells" && state.data[l.id]?.series === "cum_cm");
+  if (tintOn) {
+    const bands = (pair) => [0, 1, 2, 3].map((b) => { const t = b / 3, a = th.tint.alpha || [60, 170];
+      return `<span style="display:inline-block;width:9px;height:10px;background:${rgba([...pair[0].map((x, i) => x + (pair[1][i] - x) * t), a[0] + (a[1] - a[0]) * t])}"></span>`; }).join("");
+    out.push(`<div class="legend-item"><span style="display:inline-flex;margin-right:6px">${bands(th.tint.down)}</span>${T("lg_tint_down")}</div>` +
+      `<div class="legend-item"><span style="display:inline-flex;margin-right:6px">${bands(th.tint.up)}</span>${T("lg_tint_up")}</div>`);
+  }
   for (const lay of layersOf("contours")) {
     if (!state.visible[lay.id]) continue;
     const c = th.contours || { color: [0, 0, 0], alpha: 140 };
-    out.push(`<div class="legend-item"><span class="swatch" style="border-top:1px solid ${rgba([...c.color, c.alpha])}"></span>${T("lg_contour").replace("{s}", lay.step_cm ?? 5)}</div>`);
+    out.push(`<div class="legend-item"><span class="swatch" style="border-top:1px solid ${rgba([...c.color, c.alpha])}"></span>${T("lg_contour").replace("{s}", tintOn ? tintStep(th) : lay.step_cm ?? 5)}</div>`);
   }
   for (const lay of layersOf("cells")) {
     const m = modeOf(lay);
@@ -725,6 +807,7 @@ function renderLegend() {
 }
 
 function renderStats() {
+  if (q.get("debug") !== "1") { $("stats").innerHTML = ""; return; }      // build numbers are for the team, not the reader
   const man = state.man, st = man.stats || {}, parts = [];
   if (st.velocity) parts.push(`strokes ${st.velocity.strokes} · ` +
     Object.entries(st.velocity.trust || {}).map(([k, v]) => `${k} ${v}`).join(", "));
@@ -1705,7 +1788,7 @@ async function loadScene(id) {
     const wide = innerWidth > 700, sh = placeScore();               // keep the city clear of the score strip
     map.fitBounds([[man.bbox[0], man.bbox[1]], [man.bbox[2], man.bbox[3]]],
                   { padding: wide ? { top: 20, bottom: 20 + sh, right: 20, left: 330 } : { top: 20, bottom: 20 + sh, left: 20, right: 20 }, duration: 0 });
-    const [w0, s0, e0, n0] = man.bbox, mx = (e0 - w0) * 0.12, my = (n0 - s0) * 0.12;
+    const [w0, s0, e0, n0] = man.bbox, mx = (e0 - w0) * (state.theme.overscan ?? 0), my = (n0 - s0) * (state.theme.overscan ?? 0);
     map.setMaxBounds([[w0 - mx, s0 - my], [e0 + mx, n0 + my]]);
     setDay(state.maxDay);
     const first = !state.loadedOnce; state.loadedOnce = true;
@@ -1717,8 +1800,9 @@ async function loadScene(id) {
 
 async function setTheme(name) {
   state.theme = await getJSON(`themes/${name}.json`);
-  if (state.theme.font_load && document.fonts) {          // the label atlas is drawn once: the font must be there first
-    try { await Promise.race([document.fonts.load(`16px "${state.theme.font_load}"`), new Promise((r) => setTimeout(r, 2500))]); } catch (e) { /* fall back */ }
+  if (state.theme.font_load && document.fonts) {          // the label atlas is drawn once: the fonts must be there first
+    const faces = [state.theme.font_load, ...(state.theme.label_font_load ? [state.theme.label_font_load] : [])];
+    try { await Promise.race([Promise.all(faces.map((f) => document.fonts.load(`${state.theme.label_weight || 400} 16px "${f}"`))), new Promise((r) => setTimeout(r, 2500))]); } catch (e) { /* fall back */ }
   }
   applyThemeCSS(state.theme); paperTexture(state.theme);
   if (map) { map.setStyle(mapStyle(state.theme)); }

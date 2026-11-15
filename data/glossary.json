@@ -344,19 +344,22 @@
    "id": "tint",
    "match": {
     "en": [
-     "hatching"
+     "tint",
+     "tints"
     ],
     "uk": [
-     "штрихування"
+     "тон",
+     "тону",
+     "тоном"
     ]
    },
    "title": {
-    "en": "Hatching (an engraved tint)",
-    "uk": "Штрихування (гравірований тон)"
+    "en": "Tint (a wash of tone)",
+    "uk": "Тон (заливка)"
    },
    "text": {
-    "en": "Fine parallel strokes lay a tone over the map, the way engravers shaded a plate: the denser the strokes, the stronger the value; where nothing happens the paper stays bare.",
-    "uk": "Тонкі паралельні штрихи кладуть тон на мапу, як гравери тонували дошку: що густіші штрихи, то сильніше значення; де нічого не відбувається, лишається чистий папір."
+    "en": "A soft wash of colour laid over the map, the way map makers tinted plates by hand: the stronger the tone, the larger the value; where nothing happens the paper stays bare. Depths come in steps, each step one band of tone, with a line at its edge.",
+    "uk": "М'яка заливка кольором поверх мапи, як картографи вручну тонували таблиці: що сильніший тон, то більше значення; де нічого не відбувається, лишається чистий папір. Глибини йдуть сходинками: кожна сходинка — смуга тону з лінією на краю."
    }
   },
   {

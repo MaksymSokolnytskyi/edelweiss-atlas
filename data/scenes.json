@@ -34,7 +34,7 @@
    },
    "scenes": [
     "mexico-city-asc",
-    "ostrava-asc"
+    "ostrava-karvina-asc"
    ]
   },
   {
@@ -82,16 +82,16 @@
    }
   },
   {
-   "id": "ostrava-asc",
+   "id": "ostrava-karvina-asc",
    "title": {
-    "en": "Ostrava–Karviná coal basin",
+    "en": "Ostrava–Karviná coal field",
     "uk": "Остравсько-Карвінський вугільний басейн"
    },
-   "subtitle": "NISAR L-band GUNW, one northbound track: ground sinking over the coal mines",
+   "subtitle": "NISAR L-band GUNW (provisional), ascending pass, track 158",
    "kind": "terrain+velocity+contours+grid",
    "blurb": {
-    "en": "Ground sinking over the coal mines on both sides of the Czech–Polish border.",
-    "uk": "Земля просідає над вугільними шахтами по обидва боки чесько-польського кордону."
+    "en": "The ground settles into bowls over the coal mines, on both sides of the Czech–Polish border.",
+    "uk": "Земля осідає мульдами над вугільними шахтами по обидва боки чесько-польського кордону."
    }
   },
   {
